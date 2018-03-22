@@ -1,15 +1,25 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _restifyRouter = require('restify-router');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 // Configure out environment to be available.
 require('dotenv').config();
 
-import fs from 'fs';
-
-import {Router} from 'restify-router';
-
 // Stripe Payment Integration
-const keyPublishable = process.env.PUBLISHABLE_KEY;
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+var keyPublishable = process.env.PUBLISHABLE_KEY;
+var stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-const router = new Router();
+var router = new _restifyRouter.Router();
 
 /**
  * Takes a subsequent cart ID and confirms all items are in stock and generates the amount due.
@@ -28,13 +38,13 @@ const router = new Router();
  *  </script>
  * </form>
  */
-router.post('/createPaymentButton', (req, res, next) => {
+router.post('/createPaymentButton', function (req, res, next) {
     res.send({});
     next();
 });
 
-router.get('/', (req, res, next) => {
-    fs.readFile('./dist/test-pages/sockets.html', 'utf8', function (err, data) {
+router.get('/', function (req, res, next) {
+    _fs2.default.readFile('./dist/test-pages/sockets.html', 'utf8', function (err, data) {
         if (err) {
             next(err);
             return;
@@ -52,10 +62,10 @@ router.get('/', (req, res, next) => {
  * This endpoint handles the processing of information subsequent to a successful checkout using stripe checkout.
  * Furthermore the cart total and inventory
  */
-router.post('/processPayment', (req, res, next) => {
+router.post('/processPayment', function (req, res, next) {
     res.send({});
     next();
 });
 
-
-export default router;
+exports.default = router;
+//# sourceMappingURL=payments.js.map

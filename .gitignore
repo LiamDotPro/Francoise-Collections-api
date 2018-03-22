@@ -47,7 +47,6 @@ Temporary Items
 .apdisk
 
 /node_modules
-/dist
 .idea
 .env
 .nyc_output

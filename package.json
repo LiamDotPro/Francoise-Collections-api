@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
+    "test-with-coverage": "nyc --reporter=text ./node_modules/.bin/mocha --reporter spec",
     "dev": "nodemon dist/server.js"
   },
   "author": "Liam Read",
@@ -27,6 +28,7 @@
     "stripe": "^5.5.0"
   },
   "devDependencies": {
-    "nodemon": "^1.17.2"
+    "nodemon": "^1.17.2",
+    "nyc": "^11.6.0"
   }
 }

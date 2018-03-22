@@ -1,16 +1,14 @@
+// Configure out environment to be available.
+require('dotenv').config();
 // Restify
 import restify from 'restify';
-
 // Routers
 import AuthRouter from './routers/v1/authentication';
 import PayRouter from './routers/v1/payments';
-
-// Graphql
-import { graphqlRestify, graphiqlRestify } from 'graphql-server-restify';
+import CatalogRouter from './routers/v1/catalog';
 
 // Defines the port to run the api on.
 const port = process.env.PORT || 3000;
-
 
 let server = restify.createServer({
     name: 'Main Http Server'
@@ -33,6 +31,11 @@ AuthRouter.applyRoutes(server, '/v1/auth');
 PayRouter.applyRoutes(server, '/v1/pay');
 
 /**
+ * Catalog Routing
+ */
+CatalogRouter.applyRoutes(server, '/v1/catalog');
+
+/**
  * Handles debugging.
  */
 server.use((req, res, next) => {
@@ -43,7 +46,7 @@ server.use((req, res, next) => {
 /**
  * Makes the default accepted headers application/json only.
  */
-server.pre(function(req, res, next) {
+server.pre(function (req, res, next) {
     req.headers.accept = 'application/json';
     return next();
 });

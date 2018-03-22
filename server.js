@@ -2,16 +2,23 @@
 require('dotenv').config();
 // Restify
 import restify from 'restify';
+//helmet
+import helmet from 'helmet';
+//morgan
+import morgan from 'morgan';
 // Routers
 import AuthRouter from './routers/v1/authentication';
 import PayRouter from './routers/v1/payments';
 import CatalogRouter from './routers/v1/catalog';
+import AccountRouter from './routers/v1/accounts';
+import CartRouter from './routers/v1/cart';
 
 // Defines the port to run the api on.
 const port = process.env.PORT || 3000;
 
 let server = restify.createServer({
-    name: 'Main Http Server'
+    name: 'Main Http Server',
+    strictRouting: true
 });
 
 /**
@@ -19,6 +26,17 @@ let server = restify.createServer({
  */
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
+
+/**
+ * Integrate helmet for mitigation of various attacks.
+ */
+server.use(helmet());
+
+/**
+ * Integrate morgan for developer friendly logs of http requests.
+ */
+
+server.use(morgan('dev'));
 
 /**
  * Authentication Routing
@@ -34,6 +52,16 @@ PayRouter.applyRoutes(server, '/v1/pay');
  * Catalog Routing
  */
 CatalogRouter.applyRoutes(server, '/v1/catalog');
+
+/**
+ * Accounts Routing
+ */
+AccountRouter.applyRoutes(server, '/v1/accounts');
+
+/**
+ * Cart Routing
+ */
+CartRouter.applyRoutes(server, '/v1/cart');
 
 /**
  * Handles debugging.

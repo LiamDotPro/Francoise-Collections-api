@@ -4,9 +4,9 @@ import mysql from 'promise-mysql';
 
 const pool = mysql.createPool({
     host: 'localhost',
-    user: 'default',
-    password: 'test123',
-    database: 'influencer_api',
+    user: process.env.USER,
+    password: process.env.DB_PASSWORD,
+    database: 'ecomDB',
     connectionLimit: 10
 });
 

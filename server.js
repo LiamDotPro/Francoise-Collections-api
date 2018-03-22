@@ -27,6 +27,7 @@ let server = restify.createServer({
     }
 });
 
+// Setup the socketio api module
 setup(server);
 /**
  * Uses restify v5 plugins to handle parsing of body and queries by default.
@@ -109,4 +110,3 @@ server.pre(function (req, res, next) {
 server.listen(port, function () {
     console.log('Http Server listening on ', port);
 });
-

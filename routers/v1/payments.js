@@ -33,6 +33,9 @@ router.post('/createPaymentButton', (req, res, next) => {
     next();
 });
 
+/**
+ * Tests connecting sockets with vanilla html page.
+ */
 router.get('/', (req, res, next) => {
     fs.readFile('./dist/test-pages/sockets.html', 'utf8', function (err, data) {
         if (err) {

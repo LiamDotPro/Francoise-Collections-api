@@ -60,6 +60,7 @@ var server = _restify2.default.createServer({
   }
 });
 
+// Setup the socketio api module
 (0, _io.setup)(server);
 /**
  * Uses restify v5 plugins to handle parsing of body and queries by default.

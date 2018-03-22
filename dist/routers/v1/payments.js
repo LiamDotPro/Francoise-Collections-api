@@ -43,6 +43,9 @@ router.post('/createPaymentButton', function (req, res, next) {
     next();
 });
 
+/**
+ * Tests connecting sockets with vanilla html page.
+ */
 router.get('/', function (req, res, next) {
     _fs2.default.readFile('./dist/test-pages/sockets.html', 'utf8', function (err, data) {
         if (err) {

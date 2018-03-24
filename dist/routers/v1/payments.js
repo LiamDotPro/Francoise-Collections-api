@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _fs = require('fs');
@@ -15,11 +15,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Configure out environment to be available.
 require('dotenv').config();
 
+/**
+ * Path imports
+ */
 // Stripe Payment Integration
 var keyPublishable = process.env.PUBLISHABLE_KEY;
 var stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 var router = new _restifyRouter.Router();
+
+/**
+ * Routes
+ */
 
 /**
  * Takes a subsequent cart ID and confirms all items are in stock and generates the amount due.
@@ -39,26 +46,26 @@ var router = new _restifyRouter.Router();
  * </form>
  */
 router.post('/createPaymentButton', function (req, res, next) {
-    res.send({});
-    next();
+  res.send({});
+  next();
 });
 
 /**
  * Tests connecting sockets with vanilla html page.
  */
 router.get('/', function (req, res, next) {
-    _fs2.default.readFile('./dist/test-pages/sockets.html', 'utf8', function (err, data) {
-        if (err) {
-            next(err);
-            return;
-        }
-        res.setHeader('Content-Type', 'text/html');
-        res.setHeader('Content-Length', Buffer.byteLength(data));
-        res.writeHead(200);
-        res.write(data);
-        res.end();
-        next();
-    });
+  _fs2.default.readFile('./dist/test-pages/sockets.html', 'utf8', function (err, data) {
+    if (err) {
+      next(err);
+      return;
+    }
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Length', Buffer.byteLength(data));
+    res.writeHead(200);
+    res.write(data);
+    res.end();
+    next();
+  });
 });
 
 /**
@@ -66,8 +73,8 @@ router.get('/', function (req, res, next) {
  * Furthermore the cart total and inventory
  */
 router.post('/processPayment', function (req, res, next) {
-    res.send({});
-    next();
+  res.send({});
+  next();
 });
 
 exports.default = router;

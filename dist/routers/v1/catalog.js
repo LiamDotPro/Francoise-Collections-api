@@ -1,21 +1,29 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _restifyRouter = require('restify-router');
 
 var router = new _restifyRouter.Router();
 
+/**
+ * Path imports
+ */
+
+/**
+ * Routes
+ */
+
 router.get('/', function (req, res, next) {
-    res.send({});
-    next();
+  res.send({});
+  next();
 });
 
 router.post('/', function (req, res, next) {
-    res.send({});
-    next();
+  res.send({});
+  next();
 });
 
 exports.default = router;

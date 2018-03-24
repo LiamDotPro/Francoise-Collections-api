@@ -47,8 +47,9 @@ require('dotenv').config();
 // Routers
 
 
-// Defines the port to run the api on.
-var port = process.env.PORT || 3000;
+var port = 3000;
+
+process.env.ENVIROMENT === 'development' ? port = 3000 : port = 80;
 
 var server = _restify2.default.createServer({
   name: 'Main Http Server',

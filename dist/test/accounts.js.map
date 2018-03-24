@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"accounts.js","sourcesContent":[]}
+{"version":3,"sources":["../../test/accounts.js"],"names":["describe"],"mappings":";;AAAAA,SAAS,iBAAT,EAA4B,YAAY;AACpCA,aAAS,uBAAT,EAAkC,YAAY,CAE7C,CAFD;;AAIAA,aAAS,sBAAT,EAAiC,YAAY,CAE5C,CAFD;AAGH,CARD","file":"accounts.js","sourcesContent":["describe('Create accounts', function () {\r\n    describe('Create normal account', function () {\r\n\r\n    });\r\n\r\n    describe('Create admin account', function () {\r\n\r\n    });\r\n});"]}

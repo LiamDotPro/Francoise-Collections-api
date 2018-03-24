@@ -14,8 +14,9 @@ import AccountRouter from './routers/v1/accounts';
 import CartRouter from './routers/v1/cart';
 import {setup} from './socketio/io';
 
-// Defines the port to run the api on.
-const port = process.env.PORT || 3000;
+let port = 3000;
+
+process.env.ENVIROMENT === 'development' ? port = 3000 : port = 80;
 
 let server = restify.createServer({
     name: 'Main Http Server',

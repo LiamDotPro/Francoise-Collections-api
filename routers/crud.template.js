@@ -2,6 +2,15 @@ import {Router} from 'restify-router';
 
 const router = new Router();
 
+
+/**
+ * Path imports
+ */
+
+/**
+ * Routes
+ */
+
 router.get('/', (req, res, next) => {
     res.send({});
     next();

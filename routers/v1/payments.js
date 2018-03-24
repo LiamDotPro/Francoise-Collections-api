@@ -5,11 +5,19 @@ import fs from 'fs';
 
 import {Router} from 'restify-router';
 
+/**
+ * Path imports
+ */
 // Stripe Payment Integration
 const keyPublishable = process.env.PUBLISHABLE_KEY;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const router = new Router();
+
+/**
+ * Routes
+ */
+
 
 /**
  * Takes a subsequent cart ID and confirms all items are in stock and generates the amount due.

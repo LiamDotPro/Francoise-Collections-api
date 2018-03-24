@@ -61,7 +61,7 @@ describe('Accounts', () => {
 
         it('Should delete the previously made test account from the database', () => {
             return auth.deleteAccount('test@test.com', '123456789').then((res) => {
-                assert.equal(res.payload, 1, 'Account could not be deleted!');
+                assert.equal(res.payload, 0, 'Account could not be deleted!');
             });
         });
     })

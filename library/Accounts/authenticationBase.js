@@ -10,10 +10,8 @@ import bcrypt from 'bcrypt';
 export default class authenticationBase {
 
     constructor() {
-        if (process.env.ENVIROMENT === 'production') {
-            if (new.target === authenticationBase) {
-                throw new TypeError("Cannot construct Abstract instances directly");
-            }
+        if (process.env.ENVIROMENT === 'production' && new.target === authenticationBase) {
+            throw new TypeError("Cannot construct Abstract instances directly");
         }
     }
 
@@ -22,9 +20,7 @@ export default class authenticationBase {
      * @param password String
      */
     encryptPassword(password) {
-        const saltRounds = 10;
-
-        return bcrypt.hash(password, saltRounds).then(function (hash) {
+        return bcrypt.hash(password, 10).then((hash) => {
             return hash;
         });
     }
@@ -39,29 +35,31 @@ export default class authenticationBase {
         return Promise.using(getSqlConnection(), (connection) => {
             return connection.query('Select id, u_email, u_password FROM `accounts` Where userName=?', [email.toLowerCase()]).then((_res) => {
                 // Check if we have that account.
-                if (_res.length > 0) {
-                    return this.comparePasswords(_res[0].u_password, password).then((res) => {
-                        if (res) {
-                            return {
-                                msg: 'Success',
-                                payload: 11,
-                                user: {
-                                    id: _res[0].id
-                                }
-                            }
-                        } else {
-                            return {
-                                msg: 'Fail',
-                                payload: 1
-                            }
-                        }
-                    })
-                } else {
+                if (!_res.length > 0) {
                     return {
                         msg: 'Fail',
                         payload: 1
                     }
                 }
+
+                return this.comparePasswords(_res[0].u_password, password).then((res) => {
+                    // Incorrect password found.
+                    if (!res) {
+                        return {
+                            msg: 'Fail',
+                            payload: 1
+                        }
+                    }
+
+                    // All checks have passed.
+                    return {
+                        msg: 'Success',
+                        payload: 11,
+                        user: {
+                            id: _res[0].id
+                        }
+                    }
+                })
             });
         });
     }
@@ -102,16 +100,17 @@ export default class authenticationBase {
             }
 
             return connection.query('SELECT `u_email` FROM `accounts` WHERE u_email=?', [email.toLowerCase()]).then((res) => {
-                if (res.length === 0) {
-                    return {
-                        msg: 'Success',
-                        payload: 0
-                    }
-                } else {
+                if (res.length !== 0) {
                     return {
                         msg: 'Fail - Duplicate Account',
                         payload: 1
                     }
+                }
+
+                // No duplicate found.
+                return {
+                    msg: 'Success',
+                    payload: 0
                 }
             }).catch((e) => {
                 console.log(e);
@@ -125,15 +124,11 @@ export default class authenticationBase {
     findAccountById(id) {
         return Promise.using(getSqlConnection(), (connection) => {
             return connection.query('SELECT id, u_email FROM `accounts` WHERE id=?', [id]).then((res) => {
-                if (res.length > 0) {
-                    return {
-                        name: res[0].fullName,
-                        email: res[0].u_email,
-                        msg: 'success'
-                    };
-                } else {
-                    return false;
-                }
+                return res.length > 0 ? {
+                    name: res[0].fullName,
+                    email: res[0].u_email,
+                    msg: 'success'
+                } : false;
             })
         });
     }
@@ -176,11 +171,15 @@ export default class authenticationBase {
                 // Finally delete the account.
                 return Promise.using(getSqlConnection(), (connection) => {
                     return connection.query('DELETE FROM `accounts` WHERE u_email=?', [email]).then((res) => {
-                        return {msg: 'Account Successfully Deleted.', payload: 1};
+                        return {msg: 'Account Successfully Deleted.', payload: 0};
                     })
                 });
 
-            })
+            }).catch((e) => {
+                console.log(e);
+            });
+        }).catch((e) => {
+            console.log(e);
         });
 
     }
@@ -194,7 +193,7 @@ export default class authenticationBase {
         return Promise.using(getSqlConnection(), (connection) => {
             return connection.query('SELECT u_password from `accounts` WHERE id=?', [userID]).then((res) => {
                 return {hash: res[0].u_password}
-            })
+            });
         });
     }
 
@@ -207,11 +206,11 @@ export default class authenticationBase {
     getUserPasswordHashWithEmail(email) {
         return Promise.using(getSqlConnection(), (connection) => {
             return connection.query('SELECT u_password from `accounts` WHERE u_email=?', [email]).then((res) => {
-                if (res.length > 0) {
-                    return {hash: res[0].u_password};
-                } else {
-                    return {msg: 'No Email found in accounts.', payload: 0};
+                if (!res.length > 0) {
+                    return {msg: 'No Email found in accounts.', payload: 1};
                 }
+
+                return {hash: res[0].u_password};
             })
         });
     }

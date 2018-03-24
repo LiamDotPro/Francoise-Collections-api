@@ -28,27 +28,26 @@ export default class authentication extends baseUserFunctions {
      */
     registerUser(email, password) {
         return this.checkForDuplicateAccount(email.toLowerCase()).then((res) => {
-            if (res.payload === 0) {
-                if (password.length >= 6) {
-                    return authenticationBase.encryptPassword(password).then((pass) => {
-                        return this.createAccount(email.toLowerCase(), pass).then(() => {
-                            return {
-                                msg: 'New Account Created.',
-                                payload: res.payload
-                            }
-                        })
-                    });
-                } else {
-                    return {
-                        msg: 'Password not long enough'
-                    }
-                }
-            } else {
+            if (res.payload !== 0) {
                 return {
                     msg: res.msg
                 }
             }
 
+            if (password.length >= 6) {
+                return {
+                    msg: 'Password not long enough'
+                }
+            }
+
+            return this.encryptPassword(password).then((pass) => {
+                return this.createAccount(email.toLowerCase(), pass).then(() => {
+                    return {
+                        msg: 'New Account Created.',
+                        payload: res.payload
+                    }
+                })
+            });
         });
     }
 
@@ -68,19 +67,22 @@ export default class authentication extends baseUserFunctions {
 
     /**
      * Updates a users password provided they pass the original current password.
+     * @param currPass
+     * @param newPass
+     * @param userID
+     * @returns {Bluebird<any> | Promise.<TResult>}
      */
     updateUserPassword(currPass, newPass, userID) {
         return this.getUserPasswordHash(userID).then((res) => {
-            return authenticationBase.comparePasswords(res.hash, currPass);
+            return this.comparePasswords(res.hash, currPass);
         }).then((res) => {
-            if (res === true) {
-                return this.insertNewHashedPassword(userID, newPass);
-            } else {
+            if (!res) {
                 return {
                     status: 'err',
                     message: 'Current Password does not match'
                 }
             }
+            return this.insertNewHashedPassword(userID, newPass);
         });
     }
 

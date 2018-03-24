@@ -58,26 +58,26 @@ var authentication = function (_baseUserFunctions) {
             var _this2 = this;
 
             return this.checkForDuplicateAccount(email.toLowerCase()).then(function (res) {
-                if (res.payload === 0) {
-                    if (password.length >= 6) {
-                        return authenticationBase.encryptPassword(password).then(function (pass) {
-                            return _this2.createAccount(email.toLowerCase(), pass).then(function () {
-                                return {
-                                    msg: 'New Account Created.',
-                                    payload: res.payload
-                                };
-                            });
-                        });
-                    } else {
-                        return {
-                            msg: 'Password not long enough'
-                        };
-                    }
-                } else {
+                if (res.payload !== 0) {
                     return {
                         msg: res.msg
                     };
                 }
+
+                if (password.length >= 6) {
+                    return {
+                        msg: 'Password not long enough'
+                    };
+                }
+
+                return _this2.encryptPassword(password).then(function (pass) {
+                    return _this2.createAccount(email.toLowerCase(), pass).then(function () {
+                        return {
+                            msg: 'New Account Created.',
+                            payload: res.payload
+                        };
+                    });
+                });
             });
         }
 
@@ -99,6 +99,10 @@ var authentication = function (_baseUserFunctions) {
 
         /**
          * Updates a users password provided they pass the original current password.
+         * @param currPass
+         * @param newPass
+         * @param userID
+         * @returns {Bluebird<any> | Promise.<TResult>}
          */
 
     }, {
@@ -107,16 +111,15 @@ var authentication = function (_baseUserFunctions) {
             var _this3 = this;
 
             return this.getUserPasswordHash(userID).then(function (res) {
-                return authenticationBase.comparePasswords(res.hash, currPass);
+                return _this3.comparePasswords(res.hash, currPass);
             }).then(function (res) {
-                if (res === true) {
-                    return _this3.insertNewHashedPassword(userID, newPass);
-                } else {
+                if (!res) {
                     return {
                         status: 'err',
                         message: 'Current Password does not match'
                     };
                 }
+                return _this3.insertNewHashedPassword(userID, newPass);
             });
         }
     }]);

@@ -60,7 +60,7 @@ var authentication = function (_baseUserFunctions) {
             return this.checkForDuplicateAccount(email.toLowerCase()).then(function (res) {
                 if (res.payload === 0) {
                     if (password.length >= 6) {
-                        return _this2.encryptPassword(password).then(function (pass) {
+                        return authenticationBase.encryptPassword(password).then(function (pass) {
                             return _this2.createAccount(email.toLowerCase(), pass).then(function () {
                                 return {
                                     msg: 'New Account Created.',
@@ -107,7 +107,7 @@ var authentication = function (_baseUserFunctions) {
             var _this3 = this;
 
             return this.getUserPasswordHash(userID).then(function (res) {
-                return _this3.comparePasswords(res.hash, currPass);
+                return authenticationBase.comparePasswords(res.hash, currPass);
             }).then(function (res) {
                 if (res === true) {
                     return _this3.insertNewHashedPassword(userID, newPass);

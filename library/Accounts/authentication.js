@@ -30,7 +30,7 @@ export default class authentication extends baseUserFunctions {
         return this.checkForDuplicateAccount(email.toLowerCase()).then((res) => {
             if (res.payload === 0) {
                 if (password.length >= 6) {
-                    return this.encryptPassword(password).then((pass) => {
+                    return authenticationBase.encryptPassword(password).then((pass) => {
                         return this.createAccount(email.toLowerCase(), pass).then(() => {
                             return {
                                 msg: 'New Account Created.',
@@ -62,7 +62,7 @@ export default class authentication extends baseUserFunctions {
     login(email, password) {
         return this.validateUser(email, password).then((res) => {
             return res;
-        })
+        });
     }
 
 
@@ -71,7 +71,7 @@ export default class authentication extends baseUserFunctions {
      */
     updateUserPassword(currPass, newPass, userID) {
         return this.getUserPasswordHash(userID).then((res) => {
-            return this.comparePasswords(res.hash, currPass);
+            return authenticationBase.comparePasswords(res.hash, currPass);
         }).then((res) => {
             if (res === true) {
                 return this.insertNewHashedPassword(userID, newPass);
@@ -81,7 +81,7 @@ export default class authentication extends baseUserFunctions {
                     message: 'Current Password does not match'
                 }
             }
-        })
+        });
     }
 
 }

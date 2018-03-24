@@ -1,15 +1,19 @@
-import getSqlConnection from '../lib/db';
+require('dotenv').config();
+
+import getSqlConnection from '../../db/db';
 import Promise from 'bluebird';
 import bcrypt from 'bcrypt';
 
 /**
  * Abstract class that acts as the concrete functions for our registering api.
  */
-export default class baseUserFunctions {
+export default class authenticationBase {
 
     constructor() {
-        if (new.target === baseUserFunctions) {
-            throw new TypeError("Cannot construct Abstract instances directly");
+        if (process.env.ENVIROMENT === 'production') {
+            if (new.target === authenticationBase) {
+                throw new TypeError("Cannot construct Abstract instances directly");
+            }
         }
     }
 
@@ -33,10 +37,10 @@ export default class baseUserFunctions {
      */
     validateUser(email, password) {
         return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('Select id, userName, Password FROM `accounts` Where userName=?', [email.toLowerCase()]).then((_res) => {
+            return connection.query('Select id, u_email, u_password FROM `accounts` Where userName=?', [email.toLowerCase()]).then((_res) => {
                 // Check if we have that account.
                 if (_res.length > 0) {
-                    return this.comparePasswords(_res[0].Password, password).then((res) => {
+                    return this.comparePasswords(_res[0].u_password, password).then((res) => {
                         if (res) {
                             return {
                                 msg: 'Success',
@@ -74,12 +78,30 @@ export default class baseUserFunctions {
     }
 
     /**
+     * Checks to make sure an email is present within a string.
+     * @param text
+     * @returns {boolean}
+     */
+    checkIfEmailInString(text) {
+        let re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+        return re.test(text);
+    }
+
+    /**
      * This checks for a duplicate account inside the database.
      * Payload is a boolean Int
      */
     checkForDuplicateAccount(email) {
         return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('SELECT `userName` FROM `accounts` WHERE userName=?', [email.toLowerCase()]).then((res) => {
+
+            if (email.length < 5 || !this.checkIfEmailInString(email)) {
+                return {
+                    msg: 'Fail - No Email Found',
+                    payload: 1
+                }
+            }
+
+            return connection.query('SELECT `u_email` FROM `accounts` WHERE u_email=?', [email.toLowerCase()]).then((res) => {
                 if (res.length === 0) {
                     return {
                         msg: 'Success',
@@ -102,11 +124,11 @@ export default class baseUserFunctions {
      */
     findAccountById(id) {
         return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('SELECT id,userName FROM `accounts` WHERE id=?', [id]).then((res) => {
+            return connection.query('SELECT id, u_email FROM `accounts` WHERE id=?', [id]).then((res) => {
                 if (res.length > 0) {
                     return {
-                        name: res[0].name,
-                        email: res[0].userName,
+                        name: res[0].fullName,
+                        email: res[0].u_email,
                         msg: 'success'
                     };
                 } else {
@@ -124,7 +146,7 @@ export default class baseUserFunctions {
      */
     createAccount(email, password) {
         return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('INSERT INTO `accounts` (userName, Password) VALUES (?, ?)', [email.toLowerCase(), password]).then((res) => {
+            return connection.query('INSERT INTO `accounts` (u_email, u_password, accountType) VALUES (?, ?, 1)', [email.toLowerCase(), password]).then((res) => {
                 return {msg: 'Success', payload: 10}
             })
         }).catch((e) => {
@@ -133,16 +155,65 @@ export default class baseUserFunctions {
     }
 
     /**
+     * Permanently removes an account from the system.
+     *
+     * Usage of this method should be heavily guarded as it is a standardized method that provides only base functionality with no security.
+     */
+    deleteAccount(email, password) {
+        return this.getUserPasswordHashWithEmail(email).then((res) => {
+
+            // No has is returned with false'y calls.
+            if (!res.hasOwnProperty('hash')) {
+                return res;
+            }
+
+            // Compare passwords.
+            return this.comparePasswords(res.hash, password).then((bool) => {
+                if (!bool) {
+                    return {msg: 'Incorrect password provided for account delete', payload: 0}
+                }
+
+                // Finally delete the account.
+                return Promise.using(getSqlConnection(), (connection) => {
+                    return connection.query('DELETE FROM `accounts` WHERE u_email=?', [email]).then((res) => {
+                        return {msg: 'Account Successfully Deleted.', payload: 1};
+                    })
+                });
+
+            })
+        });
+
+    }
+
+    /**
      * Gets the users hashed and salted password for the database.
-     * This method is only to be used when a validated user with an existsing profile makes a call.
+     * This method is only to be used when a validated user with an existing profile makes a call.
      * @param userID
      */
     getUserPasswordHash(userID) {
         return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('SELECT Password from `accounts` WHERE id=?', [userID]).then((res) => {
-                return {hash: res[0].Password}
+            return connection.query('SELECT u_password from `accounts` WHERE id=?', [userID]).then((res) => {
+                return {hash: res[0].u_password}
             })
-        })
+        });
+    }
+
+
+    /**
+     * Helper method that get's a user hash using there email address, to be used alongside deletion of an existing account.
+     * @param email
+     * @returns {Bluebird<any>}
+     */
+    getUserPasswordHashWithEmail(email) {
+        return Promise.using(getSqlConnection(), (connection) => {
+            return connection.query('SELECT u_password from `accounts` WHERE u_email=?', [email]).then((res) => {
+                if (res.length > 0) {
+                    return {hash: res[0].u_password};
+                } else {
+                    return {msg: 'No Email found in accounts.', payload: 0};
+                }
+            })
+        });
     }
 
     /**
@@ -153,7 +224,7 @@ export default class baseUserFunctions {
     insertNewHashedPassword(id, password) {
         return this.encryptPassword(password).then((hash) => {
             return Promise.using(getSqlConnection(), (connection) => {
-                return connection.query('UPDATE `accounts` SET Password=? WHERE id=?', [hash, id]).then(() => {
+                return connection.query('UPDATE `accounts` SET u_password=? WHERE id=?', [hash, id]).then(() => {
                     return {
                         status: 'ok',
                         message: 'Password Changed!'

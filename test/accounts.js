@@ -80,6 +80,14 @@ describe('Accounts', () => {
             })
         });
 
+        it('Should return a signed JWT Token', () => {
+
+        });
+
+        it('Should Validate the JWT token as part of the basic strategy', () => {
+
+        });
+
         it('Should Delete an account created with the facade class', () => {
             return auth.deleteAccount('test@test.com', '123456789').then((res) => {
                 assert.equal(res.payload, 0, 'Account could not be deleted!');

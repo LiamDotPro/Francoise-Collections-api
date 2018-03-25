@@ -30,8 +30,11 @@ export default class ConfiguredPassport {
             })
         });
 
+        /**
+         * @todo Implement it so it validates the fact the user has admin status within the request.
+         */
         const adminStrategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
-            auth.findAccountById(jwt_payload.id).then((res) => {
+            auth.findAccountByIdAdmin(jwt_payload.id).then((res) => {
                 if (res.msg === 'success') {
                     next(null, jwt_payload.id);
                 } else {

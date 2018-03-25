@@ -67,6 +67,10 @@ router.post('/login', function (req, res, next) {
         var payload = {
             id: _res.user.id
         };
+
+        // setup session
+        req.session.key_name = _res.user.id;
+
         // Sets expiration date
         var token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey, { expiresIn: 60 * 60 });
         res.json({ message: 'ok', token: token });
@@ -75,7 +79,8 @@ router.post('/login', function (req, res, next) {
 });
 
 router.get('/account', passport.authenticate('jwt', { session: false }), function (req, res, next) {
-    console.log('test');
+    res.json({ session: req.session });
+    next();
 });
 
 router.post('/', function (req, res, next) {

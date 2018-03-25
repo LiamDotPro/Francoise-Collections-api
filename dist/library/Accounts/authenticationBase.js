@@ -166,12 +166,40 @@ var authenticationBase = function () {
         key: 'findAccountById',
         value: function findAccountById(id) {
             return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('SELECT id, u_email FROM `accounts` WHERE id=?', [id]).then(function (res) {
+                return connection.query('SELECT id, u_email, fullname FROM `accounts` WHERE id=?', [id]).then(function (res) {
                     return res.length > 0 ? {
-                        name: res[0].fullName,
+                        name: res[0].fullname,
                         email: res[0].u_email,
                         msg: 'success'
                     } : false;
+                });
+            });
+        }
+
+        /**
+         * Find Account By Id and also verify account status as being administrator.
+         */
+
+    }, {
+        key: 'findAccountByIdAdmin',
+        value: function findAccountByIdAdmin(id) {
+            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
+                return connection.query('SELECT id, u_email, fullname FROM `accounts` WHERE id=?', [id]).then(function (res) {
+
+                    // Check to see if there is an occurrence
+                    if (res.length === 0) {
+                        return false;
+                    }
+
+                    if (!res.hasOwnProperty('accountType') || res['accountType'] !== 2) {
+                        return false;
+                    }
+
+                    return {
+                        name: res[0].fullname,
+                        email: res[0].u_email,
+                        msg: 'success'
+                    };
                 });
             });
         }

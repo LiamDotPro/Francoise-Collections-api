@@ -16,6 +16,10 @@ var _Passport = require('./library/Passport/Passport');
 
 var _Passport2 = _interopRequireDefault(_Passport);
 
+var _redis = require('redis');
+
+var _redis2 = _interopRequireDefault(_redis);
+
 var _authentication = require('./routers/v1/authentication');
 
 var _authentication2 = _interopRequireDefault(_authentication);
@@ -48,9 +52,13 @@ require('dotenv').config();
 
 //morgan
 
-// Express Session
 //Passport
 
+// express connect reddis
+
+var session = require('express-session');
+var redisStore = require('connect-redis')(session);
+var client = _redis2.default.createClient();
 // Routers
 
 
@@ -94,6 +102,17 @@ var configuredPassport = new _Passport2.default();
 // Only configure the passport once.
 configuredPassport.configurePassport();
 server.use(configuredPassport.passport.initialize());
+
+/**
+ * Reddis Sessions
+ */
+server.use(session({
+  secret: 'ssshhhhh',
+  // create new redis store.
+  store: new redisStore({ host: 'localhost', port: 6379, client: client, ttl: 260 }),
+  saveUninitialized: false,
+  resave: false
+}));
 
 /**
  * Handle Cross Origin Requests.

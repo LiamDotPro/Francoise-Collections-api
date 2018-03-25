@@ -6,9 +6,13 @@ import restify from 'restify';
 import helmet from 'helmet';
 //morgan
 import morgan from 'morgan';
-// Express Session
 //Passport
 import passport from './library/Passport/Passport';
+// express connect reddis
+import redis from 'redis';
+let session = require('express-session');
+let redisStore = require('connect-redis')(session);
+let client  = redis.createClient();
 // Routers
 import AuthRouter from './routers/v1/authentication';
 import PayRouter from './routers/v1/payments';
@@ -57,6 +61,17 @@ let configuredPassport = new passport();
 // Only configure the passport once.
 configuredPassport.configurePassport();
 server.use(configuredPassport.passport.initialize());
+
+/**
+ * Reddis Sessions
+ */
+server.use(session({
+    secret: 'ssshhhhh',
+    // create new redis store.
+    store: new redisStore({ host: 'localhost', port: 6379, client: client,ttl :  260}),
+    saveUninitialized: false,
+    resave: false
+}));
 
 /**
  * Handle Cross Origin Requests.

@@ -1,8 +1,10 @@
 let assert = require('chai').assert;
 
-import Auth from '../library/Accounts/authenticationBase';
+import BaseAuth from '../library/Accounts/authenticationBase';
+import FullAuth from '../library/Accounts/authentication';
 
-const auth = new Auth();
+const auth = new BaseAuth();
+const fullAuth = new FullAuth();
 
 describe('Accounts', () => {
     describe('Autentication Library', () => {
@@ -64,5 +66,26 @@ describe('Accounts', () => {
                 assert.equal(res.payload, 0, 'Account could not be deleted!');
             });
         });
+
+        it('Should Create an account with the facade class', () => {
+            return fullAuth.registerUser('test@test.com', '123456789').then((res) => {
+                assert.equal(res.payload, 10, 'Facade class did not create an account!');
+            })
+        });
+
+
+        it('Should Login an existing user with there credentials', () => {
+            return fullAuth.login('test@test.com', '123456789').then((res) => {
+                assert.equal(res.payload, 11, 'Not able to login newly created user!');
+            })
+        });
+
+        it('Should Delete an account created with the facade class', () => {
+            return auth.deleteAccount('test@test.com', '123456789').then((res) => {
+                assert.equal(res.payload, 0, 'Account could not be deleted!');
+            });
+        });
+
+
     })
 });

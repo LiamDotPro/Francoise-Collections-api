@@ -58,20 +58,21 @@ var authentication = function (_baseUserFunctions) {
             var _this2 = this;
 
             return this.checkForDuplicateAccount(email.toLowerCase()).then(function (res) {
+
                 if (res.payload !== 0) {
                     return {
                         msg: res.msg
                     };
                 }
 
-                if (password.length >= 6) {
+                if (password.length <= 5) {
                     return {
                         msg: 'Password not long enough'
                     };
                 }
 
                 return _this2.encryptPassword(password).then(function (pass) {
-                    return _this2.createAccount(email.toLowerCase(), pass).then(function () {
+                    return _this2.createAccount(email.toLowerCase(), pass).then(function (res) {
                         return {
                             msg: 'New Account Created.',
                             payload: res.payload

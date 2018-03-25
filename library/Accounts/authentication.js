@@ -28,20 +28,21 @@ export default class authentication extends baseUserFunctions {
      */
     registerUser(email, password) {
         return this.checkForDuplicateAccount(email.toLowerCase()).then((res) => {
+
             if (res.payload !== 0) {
                 return {
                     msg: res.msg
                 }
             }
 
-            if (password.length >= 6) {
+            if (password.length <= 5) {
                 return {
                     msg: 'Password not long enough'
                 }
             }
 
             return this.encryptPassword(password).then((pass) => {
-                return this.createAccount(email.toLowerCase(), pass).then(() => {
+                return this.createAccount(email.toLowerCase(), pass).then((res) => {
                     return {
                         msg: 'New Account Created.',
                         payload: res.payload

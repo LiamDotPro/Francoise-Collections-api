@@ -6,6 +6,9 @@ import restify from 'restify';
 import helmet from 'helmet';
 //morgan
 import morgan from 'morgan';
+// Express Session
+//Passport
+import passport from './library/Passport/Passport';
 // Routers
 import AuthRouter from './routers/v1/authentication';
 import PayRouter from './routers/v1/payments';
@@ -30,6 +33,7 @@ let server = restify.createServer({
 
 // Setup the socketio api module
 setup(server);
+
 /**
  * Uses restify v5 plugins to handle parsing of body and queries by default.
  */
@@ -45,6 +49,14 @@ server.use(helmet());
  * Integrate morgan for developer friendly logs of http requests.
  */
 server.use(morgan('dev'));
+
+/**
+ * Passport JWT
+ */
+let configuredPassport = new passport();
+// Only configure the passport once.
+configuredPassport.configurePassport();
+server.use(configuredPassport.passport.initialize());
 
 /**
  * Handle Cross Origin Requests.

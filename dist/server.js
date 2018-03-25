@@ -12,6 +12,10 @@ var _morgan = require('morgan');
 
 var _morgan2 = _interopRequireDefault(_morgan);
 
+var _Passport = require('./library/Passport/Passport');
+
+var _Passport2 = _interopRequireDefault(_Passport);
+
 var _authentication = require('./routers/v1/authentication');
 
 var _authentication2 = _interopRequireDefault(_authentication);
@@ -44,6 +48,9 @@ require('dotenv').config();
 
 //morgan
 
+// Express Session
+//Passport
+
 // Routers
 
 
@@ -63,6 +70,7 @@ var server = _restify2.default.createServer({
 
 // Setup the socketio api module
 (0, _io.setup)(server);
+
 /**
  * Uses restify v5 plugins to handle parsing of body and queries by default.
  */
@@ -78,6 +86,14 @@ server.use((0, _helmet2.default)());
  * Integrate morgan for developer friendly logs of http requests.
  */
 server.use((0, _morgan2.default)('dev'));
+
+/**
+ * Passport JWT
+ */
+var configuredPassport = new _Passport2.default();
+// Only configure the passport once.
+configuredPassport.configurePassport();
+server.use(configuredPassport.passport.initialize());
 
 /**
  * Handle Cross Origin Requests.

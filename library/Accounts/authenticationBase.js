@@ -33,11 +33,11 @@ export default class authenticationBase {
      */
     validateUser(email, password) {
         return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('Select id, u_email, u_password FROM `accounts` Where userName=?', [email.toLowerCase()]).then((_res) => {
+            return connection.query('Select id, u_email, u_password FROM `accounts` Where u_email=?', [email.toLowerCase()]).then((_res) => {
                 // Check if we have that account.
                 if (!_res.length > 0) {
                     return {
-                        msg: 'Fail',
+                        msg: 'Account or password did not match!',
                         payload: 1
                     }
                 }
@@ -46,7 +46,7 @@ export default class authenticationBase {
                     // Incorrect password found.
                     if (!res) {
                         return {
-                            msg: 'Fail',
+                            msg: 'Account or password did not match!',
                             payload: 1
                         }
                     }
@@ -165,7 +165,7 @@ export default class authenticationBase {
             // Compare passwords.
             return this.comparePasswords(res.hash, password).then((bool) => {
                 if (!bool) {
-                    return {msg: 'Incorrect password provided for account delete', payload: 0}
+                    return {msg: 'Incorrect password provided for account delete', payload: 1}
                 }
 
                 // Finally delete the account.

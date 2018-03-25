@@ -4,11 +4,16 @@ var _authenticationBase = require('../library/Accounts/authenticationBase');
 
 var _authenticationBase2 = _interopRequireDefault(_authenticationBase);
 
+var _authentication = require('../library/Accounts/authentication');
+
+var _authentication2 = _interopRequireDefault(_authentication);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var assert = require('chai').assert;
 
 var auth = new _authenticationBase2.default();
+var fullAuth = new _authentication2.default();
 
 describe('Accounts', function () {
     describe('Autentication Library', function () {
@@ -65,6 +70,24 @@ describe('Accounts', function () {
         });
 
         it('Should delete the previously made test account from the database', function () {
+            return auth.deleteAccount('test@test.com', '123456789').then(function (res) {
+                assert.equal(res.payload, 0, 'Account could not be deleted!');
+            });
+        });
+
+        it('Should Create an account with the facade class', function () {
+            return fullAuth.registerUser('test@test.com', '123456789').then(function (res) {
+                assert.equal(res.payload, 10, 'Facade class did not create an account!');
+            });
+        });
+
+        it('Should Login an existing user with there credentials', function () {
+            return fullAuth.login('test@test.com', '123456789').then(function (res) {
+                assert.equal(res.payload, 11, 'Not able to login newly created user!');
+            });
+        });
+
+        it('Should Delete an account created with the facade class', function () {
             return auth.deleteAccount('test@test.com', '123456789').then(function (res) {
                 assert.equal(res.payload, 0, 'Account could not be deleted!');
             });

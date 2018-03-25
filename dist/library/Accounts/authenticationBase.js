@@ -62,11 +62,11 @@ var authenticationBase = function () {
             var _this = this;
 
             return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('Select id, u_email, u_password FROM `accounts` Where userName=?', [email.toLowerCase()]).then(function (_res) {
+                return connection.query('Select id, u_email, u_password FROM `accounts` Where u_email=?', [email.toLowerCase()]).then(function (_res) {
                     // Check if we have that account.
                     if (!_res.length > 0) {
                         return {
-                            msg: 'Fail',
+                            msg: 'Account or password did not match!',
                             payload: 1
                         };
                     }
@@ -75,7 +75,7 @@ var authenticationBase = function () {
                         // Incorrect password found.
                         if (!res) {
                             return {
-                                msg: 'Fail',
+                                msg: 'Account or password did not match!',
                                 payload: 1
                             };
                         }
@@ -216,7 +216,7 @@ var authenticationBase = function () {
                 // Compare passwords.
                 return _this3.comparePasswords(res.hash, password).then(function (bool) {
                     if (!bool) {
-                        return { msg: 'Incorrect password provided for account delete', payload: 0 };
+                        return { msg: 'Incorrect password provided for account delete', payload: 1 };
                     }
 
                     // Finally delete the account.

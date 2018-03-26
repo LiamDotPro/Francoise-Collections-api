@@ -56,11 +56,12 @@ require('dotenv').config();
 
 // express connect reddis
 
-var session = require('express-session');
-var redisStore = require('connect-redis')(session);
-var client = _redis2.default.createClient();
 // Routers
 
+
+var session = require('express-session');
+var redisStore = require('connect-redis')(session);
+var client = _redis2.default.createClient({ host: '109.237.26.131', port: 6379 });
 
 var port = 3000;
 
@@ -109,10 +110,18 @@ server.use(configuredPassport.passport.initialize());
 server.use(session({
   secret: 'ssshhhhh',
   // create new redis store.
-  store: new redisStore({ host: 'localhost', port: 6379, client: client, ttl: 260 }),
+  store: new redisStore({ host: '109.237.26.131', port: 6379, client: client, ttl: 260 }),
   saveUninitialized: false,
   resave: false
 }));
+
+client.on('connect', function () {
+  console.log('Connected to Redis');
+});
+
+client.on('error', function (err) {
+  console.log('Redis error: ' + err);
+});
 
 /**
  * Handle Cross Origin Requests.

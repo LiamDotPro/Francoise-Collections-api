@@ -10,9 +10,6 @@ import morgan from 'morgan';
 import passport from './library/Passport/Passport';
 // express connect reddis
 import redis from 'redis';
-let session = require('express-session');
-let redisStore = require('connect-redis')(session);
-let client  = redis.createClient();
 // Routers
 import AuthRouter from './routers/v1/authentication';
 import PayRouter from './routers/v1/payments';
@@ -20,6 +17,10 @@ import CatalogRouter from './routers/v1/catalog';
 import AccountRouter from './routers/v1/accounts';
 import CartRouter from './routers/v1/cart';
 import {setup} from './socketio/io';
+
+let session = require('express-session');
+let redisStore = require('connect-redis')(session);
+let client = redis.createClient({host: '109.237.26.131', port: 6379});
 
 let port = 3000;
 
@@ -68,10 +69,18 @@ server.use(configuredPassport.passport.initialize());
 server.use(session({
     secret: 'ssshhhhh',
     // create new redis store.
-    store: new redisStore({ host: 'localhost', port: 6379, client: client,ttl :  260}),
+    store: new redisStore({host: '109.237.26.131', port: 6379, client: client, ttl: 260}),
     saveUninitialized: false,
     resave: false
 }));
+
+client.on('connect', function () {
+    console.log('Connected to Redis');
+});
+
+client.on('error', function (err) {
+    console.log('Redis error: ' + err);
+});
 
 /**
  * Handle Cross Origin Requests.

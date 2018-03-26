@@ -21,15 +21,19 @@ var sequelize = exports.sequelize = new _sequelize2.default('ecomdb', 'zeus', 't
         min: 0,
         acquire: 30000,
         idle: 10000
-    }
+    },
+    // disable logging; default: console.log
+    logging: false
 });
 
 sequelize.authenticate().then(function () {
-    console.log('Connection has been established successfully.');
+    console.log('Connection has been established successfully to postgres.');
 }).catch(function (err) {
     console.error('Unable to connect to the database:', err);
 });
 
-// The following can be imported to derive a connection from pooling to be used.
+/**
+ *  The following can be imported to derive a connection from pooling to be used.
+ */
 // import {sequelize} from './db/conn';
 //# sourceMappingURL=conn.js.map

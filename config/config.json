@@ -4,13 +4,15 @@
     "password": "test123",
     "database": "database_development",
     "host": "109.237.26.131",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "logging" : false
   },
   "test": {
     "username": "zeus",
     "password": "test123",
     "database": "database_test",
     "host": "109.237.26.131",
+    "logging" : false,
     "dialect": "postgres"
   },
   "production": {
@@ -18,6 +20,7 @@
     "password": "test123",
     "database": "database_production",
     "host": "109.237.26.131",
+    "logging" : false,
     "dialect": "postgres"
   }
 }

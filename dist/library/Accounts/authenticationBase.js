@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+require('babel-polyfill');
+
 var _db = require('../../db/db');
 
 var _db2 = _interopRequireDefault(_db);
@@ -24,14 +26,16 @@ var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 require('dotenv').config();
-
-var user = _index2.default.account;
+// Database Class.
 
 // Accounts Model
-console.log(user);
+var accounts = _index2.default.accounts;
+
 /**
  * Abstract class that acts as the concrete functions for our registering api.
  */
@@ -53,11 +57,32 @@ var authenticationBase = function () {
 
     _createClass(authenticationBase, [{
         key: 'encryptPassword',
-        value: function encryptPassword(password) {
-            return _bcrypt2.default.hash(password, 10).then(function (hash) {
-                return hash;
-            });
-        }
+        value: function () {
+            var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(password) {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                _context.next = 2;
+                                return _bcrypt2.default.hash(password, 10);
+
+                            case 2:
+                                return _context.abrupt('return', _context.sent);
+
+                            case 3:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function encryptPassword(_x) {
+                return _ref.apply(this, arguments);
+            }
+
+            return encryptPassword;
+        }()
 
         /**
          * Validates a user from within the database.
@@ -67,40 +92,69 @@ var authenticationBase = function () {
 
     }, {
         key: 'validateUser',
-        value: function validateUser(email, password) {
-            var _this = this;
+        value: function () {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(email, password) {
+                var foundAccounts, res;
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                _context2.next = 2;
+                                return accounts.findAll({ where: { u_email: email } });
 
-            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('Select id, u_email, u_password FROM `accounts` Where u_email=?', [email.toLowerCase()]).then(function (_res) {
-                    // Check if we have that account.
-                    if (!_res.length > 0) {
-                        return {
-                            msg: 'Account or password did not match!',
-                            payload: 1
-                        };
-                    }
+                            case 2:
+                                foundAccounts = _context2.sent;
 
-                    return _this.comparePasswords(_res[0].u_password, password).then(function (res) {
-                        // Incorrect password found.
-                        if (!res) {
-                            return {
-                                msg: 'Account or password did not match!',
-                                payload: 1
-                            };
+                                if (!(foundAccounts.length > 0)) {
+                                    _context2.next = 5;
+                                    break;
+                                }
+
+                                return _context2.abrupt('return', {
+                                    msg: 'Account or password did not match!',
+                                    payload: 1
+                                });
+
+                            case 5:
+                                _context2.next = 7;
+                                return this.comparePasswords(foundAccounts[0].dataValues.u_password, password);
+
+                            case 7:
+                                res = _context2.sent;
+
+                                if (res) {
+                                    _context2.next = 10;
+                                    break;
+                                }
+
+                                return _context2.abrupt('return', {
+                                    msg: 'Account or password did not match!',
+                                    payload: 1
+                                });
+
+                            case 10:
+                                return _context2.abrupt('return', {
+                                    msg: 'Success',
+                                    payload: 11,
+                                    user: {
+                                        id: foundAccounts[0].dataValues.id
+                                    }
+                                });
+
+                            case 11:
+                            case 'end':
+                                return _context2.stop();
                         }
+                    }
+                }, _callee2, this);
+            }));
 
-                        // All checks have passed.
-                        return {
-                            msg: 'Success',
-                            payload: 11,
-                            user: {
-                                id: _res[0].id
-                            }
-                        };
-                    });
-                });
-            });
-        }
+            function validateUser(_x2, _x3) {
+                return _ref2.apply(this, arguments);
+            }
+
+            return validateUser;
+        }()
 
         /**
          * This does a simple bcrypt comparision to identify correctness.
@@ -110,11 +164,32 @@ var authenticationBase = function () {
 
     }, {
         key: 'comparePasswords',
-        value: function comparePasswords(hash, plainText) {
-            return _bcrypt2.default.compare(plainText, hash).then(function (res) {
-                return res === true;
-            });
-        }
+        value: function () {
+            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(hash, plainText) {
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                _context3.next = 2;
+                                return _bcrypt2.default.compare(plainText, hash);
+
+                            case 2:
+                                return _context3.abrupt('return', _context3.sent);
+
+                            case 3:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function comparePasswords(_x4, _x5) {
+                return _ref3.apply(this, arguments);
+            }
+
+            return comparePasswords;
+        }()
 
         /**
          * Checks to make sure an email is present within a string.
@@ -136,36 +211,64 @@ var authenticationBase = function () {
 
     }, {
         key: 'checkForDuplicateAccount',
-        value: function checkForDuplicateAccount(email) {
-            var _this2 = this;
+        value: function () {
+            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(email) {
+                var result;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                if (!(email.length < 5 || !this.checkIfEmailInString(email))) {
+                                    _context4.next = 2;
+                                    break;
+                                }
 
-            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
+                                return _context4.abrupt('return', {
+                                    msg: 'Fail - No Email Found',
+                                    payload: 1
+                                });
 
-                if (email.length < 5 || !_this2.checkIfEmailInString(email)) {
-                    return {
-                        msg: 'Fail - No Email Found',
-                        payload: 1
-                    };
-                }
+                            case 2:
+                                _context4.next = 4;
+                                return accounts.findAll({
+                                    where: {
+                                        u_email: email
+                                    }
+                                });
 
-                return connection.query('SELECT `u_email` FROM `accounts` WHERE u_email=?', [email.toLowerCase()]).then(function (res) {
-                    if (res.length !== 0) {
-                        return {
-                            msg: 'Fail - Duplicate Account',
-                            payload: 1
-                        };
+                            case 4:
+                                result = _context4.sent;
+
+                                if (!(result.length !== 0)) {
+                                    _context4.next = 7;
+                                    break;
+                                }
+
+                                return _context4.abrupt('return', {
+                                    msg: 'Fail - Duplicate Account',
+                                    payload: 1
+                                });
+
+                            case 7:
+                                return _context4.abrupt('return', {
+                                    msg: 'Success',
+                                    payload: 0
+                                });
+
+                            case 8:
+                            case 'end':
+                                return _context4.stop();
+                        }
                     }
+                }, _callee4, this);
+            }));
 
-                    // No duplicate found.
-                    return {
-                        msg: 'Success',
-                        payload: 0
-                    };
-                }).catch(function (e) {
-                    console.log(e);
-                });
-            });
-        }
+            function checkForDuplicateAccount(_x6) {
+                return _ref4.apply(this, arguments);
+            }
+
+            return checkForDuplicateAccount;
+        }()
 
         /**
          * Find Account by Id
@@ -173,17 +276,42 @@ var authenticationBase = function () {
 
     }, {
         key: 'findAccountById',
-        value: function findAccountById(id) {
-            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('SELECT id, u_email, fullname FROM `accounts` WHERE id=?', [id]).then(function (res) {
-                    return res.length > 0 ? {
-                        name: res[0].fullname,
-                        email: res[0].u_email,
-                        msg: 'success'
-                    } : false;
-                });
-            });
-        }
+        value: function () {
+            var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(id) {
+                var res;
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                    while (1) {
+                        switch (_context5.prev = _context5.next) {
+                            case 0:
+                                _context5.next = 2;
+                                return accounts.findAll({
+                                    where: {
+                                        id: id
+                                    }
+                                });
+
+                            case 2:
+                                res = _context5.sent;
+                                return _context5.abrupt('return', res.length > 0 ? {
+                                    name: res[0].dataValues.fullname,
+                                    email: res[0].dataValues.u_email,
+                                    msg: 'success'
+                                } : false);
+
+                            case 4:
+                            case 'end':
+                                return _context5.stop();
+                        }
+                    }
+                }, _callee5, this);
+            }));
+
+            function findAccountById(_x7) {
+                return _ref5.apply(this, arguments);
+            }
+
+            return findAccountById;
+        }()
 
         /**
          * Find Account By Id and also verify account status as being administrator.
@@ -191,46 +319,112 @@ var authenticationBase = function () {
 
     }, {
         key: 'findAccountByIdAdmin',
-        value: function findAccountByIdAdmin(id) {
-            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('SELECT id, u_email, fullname FROM `accounts` WHERE id=?', [id]).then(function (res) {
+        value: function () {
+            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(id) {
+                var res;
+                return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                    while (1) {
+                        switch (_context6.prev = _context6.next) {
+                            case 0:
+                                _context6.next = 2;
+                                return accounts.findAll({
+                                    where: {
+                                        id: id
+                                    }
+                                });
 
-                    // Check to see if there is an occurrence
-                    if (res.length === 0) {
-                        return false;
+                            case 2:
+                                res = _context6.sent;
+
+                                if (!(res.length === 0)) {
+                                    _context6.next = 5;
+                                    break;
+                                }
+
+                                return _context6.abrupt('return', false);
+
+                            case 5:
+                                if (!(!res[0].dataValues.hasOwnProperty('accountType') || res[0].dataValues.accountType !== 2)) {
+                                    _context6.next = 7;
+                                    break;
+                                }
+
+                                return _context6.abrupt('return', false);
+
+                            case 7:
+                                return _context6.abrupt('return', {
+                                    name: res[0].dataValues.fullname,
+                                    email: res[0].dataValues.u_email,
+                                    accountType: res[0].dataValues.accountType,
+                                    msg: 'success'
+                                });
+
+                            case 8:
+                            case 'end':
+                                return _context6.stop();
+                        }
                     }
+                }, _callee6, this);
+            }));
 
-                    if (!res.hasOwnProperty('accountType') || res['accountType'] !== 2) {
-                        return false;
-                    }
+            function findAccountByIdAdmin(_x8) {
+                return _ref6.apply(this, arguments);
+            }
 
-                    return {
-                        name: res[0].fullname,
-                        email: res[0].u_email,
-                        msg: 'success'
-                    };
-                });
-            });
-        }
+            return findAccountByIdAdmin;
+        }()
 
         /**
          * This is the last part of the system.
          * All passwords should be ran through bcrypt before being inserted.
          * @param email
-         * @param password
+         * @param password string
          */
 
     }, {
         key: 'createAccount',
-        value: function createAccount(email, password) {
-            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('INSERT INTO `accounts` (u_email, u_password, accountType) VALUES (?, ?, 1)', [email.toLowerCase(), password]).then(function (res) {
-                    return { msg: 'Success', payload: 10 };
-                });
-            }).catch(function (e) {
-                console.log(e);
-            });
-        }
+        value: function () {
+            var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(email, password) {
+                var pass, createdAccount;
+                return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                    while (1) {
+                        switch (_context7.prev = _context7.next) {
+                            case 0:
+                                _context7.next = 2;
+                                return auth.encryptPassword(password);
+
+                            case 2:
+                                pass = _context7.sent;
+                                _context7.next = 5;
+                                return accounts.create({
+                                    u_email: email,
+                                    u_password: pass,
+                                    accountType: 1,
+                                    fullname: ''
+                                });
+
+                            case 5:
+                                createdAccount = _context7.sent;
+
+                                console.log(createdAccount);
+                                return _context7.abrupt('return', {
+                                    msg: 'Success', payload: 10
+                                });
+
+                            case 8:
+                            case 'end':
+                                return _context7.stop();
+                        }
+                    }
+                }, _callee7, this);
+            }));
+
+            function createAccount(_x9, _x10) {
+                return _ref7.apply(this, arguments);
+            }
+
+            return createAccount;
+        }()
 
         /**
          * Permanently removes an account from the system.
@@ -241,7 +435,7 @@ var authenticationBase = function () {
     }, {
         key: 'deleteAccount',
         value: function deleteAccount(email, password) {
-            var _this3 = this;
+            var _this = this;
 
             return this.getUserPasswordHashWithEmail(email).then(function (res) {
 
@@ -251,7 +445,7 @@ var authenticationBase = function () {
                 }
 
                 // Compare passwords.
-                return _this3.comparePasswords(res.hash, password).then(function (bool) {
+                return _this.comparePasswords(res.hash, password).then(function (bool) {
                     if (!bool) {
                         return { msg: 'Incorrect password provided for account delete', payload: 1 };
                     }

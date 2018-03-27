@@ -1,14 +1,13 @@
 require('dotenv').config();
-
+import 'babel-polyfill';
 import getSqlConnection from '../../db/db';
 import Promise from 'bluebird';
 import bcrypt from 'bcrypt';
+// Database Class.
 import db from '../../models/index';
-
-const user = db.account;
-
 // Accounts Model
-console.log(user);
+const accounts = db.accounts;
+
 /**
  * Abstract class that acts as the concrete functions for our registering api.
  */
@@ -24,10 +23,8 @@ export default class authenticationBase {
      * Encrypts plain text passwords using a safe encryption method.
      * @param password String
      */
-    encryptPassword(password) {
-        return bcrypt.hash(password, 10).then((hash) => {
-            return hash;
-        });
+    async encryptPassword(password) {
+        return await bcrypt.hash(password, 10);
     }
 
 
@@ -36,37 +33,33 @@ export default class authenticationBase {
      * @param email
      * @param password
      */
-    validateUser(email, password) {
-        return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('Select id, u_email, u_password FROM `accounts` Where u_email=?', [email.toLowerCase()]).then((_res) => {
-                // Check if we have that account.
-                if (!_res.length > 0) {
-                    return {
-                        msg: 'Account or password did not match!',
-                        payload: 1
-                    }
-                }
+    async validateUser(email, password) {
 
-                return this.comparePasswords(_res[0].u_password, password).then((res) => {
-                    // Incorrect password found.
-                    if (!res) {
-                        return {
-                            msg: 'Account or password did not match!',
-                            payload: 1
-                        }
-                    }
+        let foundAccounts = await accounts.findAll({where: {u_email: email}});
 
-                    // All checks have passed.
-                    return {
-                        msg: 'Success',
-                        payload: 11,
-                        user: {
-                            id: _res[0].id
-                        }
-                    }
-                })
-            });
-        });
+        if (foundAccounts.length > 0) {
+            return {
+                msg: 'Account or password did not match!',
+                payload: 1
+            }
+        }
+
+        let res = await this.comparePasswords(foundAccounts[0].dataValues.u_password, password);
+
+        if (!res) {
+            return {
+                msg: 'Account or password did not match!',
+                payload: 1
+            }
+        }
+
+        return {
+            msg: 'Success',
+            payload: 11,
+            user: {
+                id: foundAccounts[0].dataValues.id
+            }
+        };
     }
 
     /**
@@ -74,10 +67,8 @@ export default class authenticationBase {
      * @param hash
      * @param plainText
      */
-    comparePasswords(hash, plainText) {
-        return bcrypt.compare(plainText, hash).then((res) => {
-            return res === true;
-        });
+    async comparePasswords(hash, plainText) {
+        return await bcrypt.compare(plainText, hash);
     }
 
     /**
@@ -94,89 +85,99 @@ export default class authenticationBase {
      * This checks for a duplicate account inside the database.
      * Payload is a boolean Int
      */
-    checkForDuplicateAccount(email) {
-        return Promise.using(getSqlConnection(), (connection) => {
-
-            if (email.length < 5 || !this.checkIfEmailInString(email)) {
-                return {
-                    msg: 'Fail - No Email Found',
-                    payload: 1
-                }
+    async checkForDuplicateAccount(email) {
+        if (email.length < 5 || !this.checkIfEmailInString(email)) {
+            return {
+                msg: 'Fail - No Email Found',
+                payload: 1
             }
+        }
 
-            return connection.query('SELECT `u_email` FROM `accounts` WHERE u_email=?', [email.toLowerCase()]).then((res) => {
-                if (res.length !== 0) {
-                    return {
-                        msg: 'Fail - Duplicate Account',
-                        payload: 1
-                    }
-                }
-
-                // No duplicate found.
-                return {
-                    msg: 'Success',
-                    payload: 0
-                }
-            }).catch((e) => {
-                console.log(e);
-            })
+        let result = await accounts.findAll({
+            where: {
+                u_email: email
+            }
         });
+
+        if (result.length !== 0) {
+            return {
+                msg: 'Fail - Duplicate Account',
+                payload: 1
+            }
+        }
+
+        // No duplicate found.
+        return {
+            msg: 'Success',
+            payload: 0
+        }
     }
 
     /**
      * Find Account by Id
      */
-    findAccountById(id) {
-        return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('SELECT id, u_email, fullname FROM `accounts` WHERE id=?', [id]).then((res) => {
-                return res.length > 0 ? {
-                    name: res[0].fullname,
-                    email: res[0].u_email,
-                    msg: 'success'
-                } : false;
-            })
+    async findAccountById(id) {
+
+        let res = await accounts.findAll({
+            where: {
+                id: id
+            }
         });
+
+        return res.length > 0 ? {
+            name: res[0].dataValues.fullname,
+            email: res[0].dataValues.u_email,
+            msg: 'success'
+        } : false;
     }
 
     /**
      * Find Account By Id and also verify account status as being administrator.
      */
-    findAccountByIdAdmin(id) {
-        return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('SELECT id, u_email, fullname FROM `accounts` WHERE id=?', [id]).then((res) => {
+    async findAccountByIdAdmin(id) {
 
-                // Check to see if there is an occurrence
-                if (res.length === 0) {
-                    return false
-                }
+        let res = await accounts.findAll({
+            where: {
+                id: id
+            }
+        });
 
-                if (!res.hasOwnProperty('accountType') || res['accountType'] !== 2) {
-                    return false;
-                }
+        // Check to see if there is an occurrence
+        if (res.length === 0) {
+            return false;
+        }
 
-                return {
-                    name: res[0].fullname,
-                    email: res[0].u_email,
-                    msg: 'success'
-                }
-            })
-        })
+        if (!res[0].dataValues.hasOwnProperty('accountType') || res[0].dataValues.accountType !== 2) {
+            return false;
+        }
+
+        return {
+            name: res[0].dataValues.fullname,
+            email: res[0].dataValues.u_email,
+            accountType: res[0].dataValues.accountType,
+            msg: 'success'
+        }
+
     }
 
     /**
      * This is the last part of the system.
      * All passwords should be ran through bcrypt before being inserted.
      * @param email
-     * @param password
+     * @param password string
      */
-    createAccount(email, password) {
-        return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('INSERT INTO `accounts` (u_email, u_password, accountType) VALUES (?, ?, 1)', [email.toLowerCase(), password]).then((res) => {
-                return {msg: 'Success', payload: 10}
-            })
-        }).catch((e) => {
-            console.log(e);
+    async createAccount(email, password) {
+        let pass = await auth.encryptPassword(password);
+        let createdAccount = await accounts.create({
+            u_email: email,
+            u_password: pass,
+            accountType: 1,
+            fullname: ''
         });
+        console.log(createdAccount);
+        return {
+            msg: 'Success', payload: 10
+        };
     }
 
     /**

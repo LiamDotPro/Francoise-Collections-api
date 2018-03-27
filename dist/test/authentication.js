@@ -21,32 +21,25 @@ var auth = new _authenticationBase2.default();
 
 describe('Test', function () {
     describe('create a user', _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var password;
         return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
-                        _context.next = 2;
-                        return auth.encryptPassword('Belkinlr93.');
-
-                    case 2:
-                        password = _context.sent;
-
-                        accounts.create({
-                            u_email: 'liam.pro',
-                            u_password: password,
-                            accountType: 2,
-                            fullname: 'Liam Read'
-                        }).then(function (user) {
-                            console.log(user);
-                        });
-
-                    case 4:
                     case 'end':
                         return _context.stop();
                 }
             }
         }, _callee, undefined);
-    })));
+    }))
+    // let password = await auth.encryptPassword('Belkinlr93.');
+    // accounts.create({
+    //     u_email: 'liam.pro',
+    //     u_password: password,
+    //     accountType: 2,
+    //     fullname: 'Liam Read'
+    // }).then((user) => {
+    //     console.log(user);
+    // })
+    );
 });
 //# sourceMappingURL=authentication.js.map

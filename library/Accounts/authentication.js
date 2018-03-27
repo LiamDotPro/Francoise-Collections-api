@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import Promise from 'bluebird';
 import authenticationBase from "./authenticationBase";
 

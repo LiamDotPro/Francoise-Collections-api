@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import baseUserFunctions from "./authenticationBase";
+import authenticationBase from "./authenticationBase";
 
 /**
  * Payload Numbering
@@ -9,7 +9,7 @@ import baseUserFunctions from "./authenticationBase";
  * 10 Account Creation
  * 11 Successful Login
  */
-export default class authentication extends baseUserFunctions {
+export default class authentication extends authenticationBase {
 
     constructor() {
         super();

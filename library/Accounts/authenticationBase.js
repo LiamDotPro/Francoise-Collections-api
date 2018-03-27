@@ -1,10 +1,14 @@
 require('dotenv').config();
 
 import getSqlConnection from '../../db/db';
-import {connection} from '../../db/conn';
 import Promise from 'bluebird';
 import bcrypt from 'bcrypt';
+import db from '../../models/index';
 
+const user = db.account;
+
+// Accounts Model
+console.log(user);
 /**
  * Abstract class that acts as the concrete functions for our registering api.
  */

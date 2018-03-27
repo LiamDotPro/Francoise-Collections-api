@@ -10,9 +10,9 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var _authenticationBase = require('./authenticationBase');
+var _authenticationBase2 = require('./authenticationBase');
 
-var _authenticationBase2 = _interopRequireDefault(_authenticationBase);
+var _authenticationBase3 = _interopRequireDefault(_authenticationBase2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,8 +30,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * 10 Account Creation
  * 11 Successful Login
  */
-var authentication = function (_baseUserFunctions) {
-    _inherits(authentication, _baseUserFunctions);
+var authentication = function (_authenticationBase) {
+    _inherits(authentication, _authenticationBase);
 
     function authentication() {
         _classCallCheck(this, authentication);
@@ -126,7 +126,7 @@ var authentication = function (_baseUserFunctions) {
     }]);
 
     return authentication;
-}(_authenticationBase2.default);
+}(_authenticationBase3.default);
 
 exports.default = authentication;
 //# sourceMappingURL=authentication.js.map

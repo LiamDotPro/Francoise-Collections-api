@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "zeus",
+    "password": "test123",
+    "database": "database_development",
+    "host": "109.237.26.131",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "zeus",
+    "password": "test123",
+    "database": "database_test",
+    "host": "109.237.26.131",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "zeus",
+    "password": "test123",
+    "database": "database_production",
+    "host": "109.237.26.131",
+    "dialect": "postgres"
+  }
+}

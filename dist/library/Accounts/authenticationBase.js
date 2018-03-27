@@ -10,8 +10,6 @@ var _db = require('../../db/db');
 
 var _db2 = _interopRequireDefault(_db);
 
-var _conn = require('../../db/conn');
-
 var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
@@ -20,15 +18,24 @@ var _bcrypt = require('bcrypt');
 
 var _bcrypt2 = _interopRequireDefault(_bcrypt);
 
+var _index = require('../../models/index');
+
+var _index2 = _interopRequireDefault(_index);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 require('dotenv').config();
 
+var user = _index2.default.account;
+
+// Accounts Model
+console.log(user);
 /**
  * Abstract class that acts as the concrete functions for our registering api.
  */
+
 var authenticationBase = function () {
     function authenticationBase() {
         _classCallCheck(this, authenticationBase);

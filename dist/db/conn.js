@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.sequelize = undefined;
+exports.connection = undefined;
 
 var _sequelize = require('sequelize');
 
@@ -11,7 +11,7 @@ var _sequelize2 = _interopRequireDefault(_sequelize);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var sequelize = exports.sequelize = new _sequelize2.default('ecomdb', 'zeus', 'test123', {
+var connection = exports.connection = new _sequelize2.default('ecomdb', 'zeus', 'test123', {
     host: '109.237.26.131',
     dialect: 'postgres',
     operatorsAliases: false,
@@ -26,7 +26,7 @@ var sequelize = exports.sequelize = new _sequelize2.default('ecomdb', 'zeus', 't
     logging: false
 });
 
-sequelize.authenticate().then(function () {
+connection.authenticate().then(function () {
     console.log('Connection has been established successfully to postgres.');
 }).catch(function (err) {
     console.error('Unable to connect to the database:', err);
@@ -35,5 +35,5 @@ sequelize.authenticate().then(function () {
 /**
  *  The following can be imported to derive a connection from pooling to be used.
  */
-// import {sequelize} from './db/conn';
+// import {connection} from './db/conn';
 //# sourceMappingURL=conn.js.map

@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 import getSqlConnection from '../../db/db';
+import {connection} from '../../db/conn';
 import Promise from 'bluebird';
 import bcrypt from 'bcrypt';
 

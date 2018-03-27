@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 // Configure out environment to be available.
 require('dotenv').config();
 // Restify

@@ -12,6 +12,7 @@
   "author": "Liam Read",
   "license": "MIT",
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "bcrypt": "^1.0.3",
     "bluebird": "^3.5.1",
@@ -34,6 +35,7 @@
     "restify": "^6.4.0",
     "restify-router": "^0.5.0",
     "sequelize": "^4.37.4",
+    "sequelize-cli": "^4.0.0",
     "socket.io": "^2.0.4",
     "stripe": "^5.5.0"
   },

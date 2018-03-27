@@ -10,6 +10,8 @@ var _db = require('../../db/db');
 
 var _db2 = _interopRequireDefault(_db);
 
+var _conn = require('../../db/conn');
+
 var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);

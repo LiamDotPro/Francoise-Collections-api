@@ -1,5 +1,7 @@
 'use strict';
 
+require('babel-polyfill');
+
 var _restify = require('restify');
 
 var _restify2 = _interopRequireDefault(_restify);

@@ -56,16 +56,17 @@ describe('Accounts', () => {
         });
 
         it('Should Create an account given an email and a password', () => {
-            return auth.createAccount('test@test.com', hash).then((res) => {
-                assert.equal(res.payload, 10, 'Test Email was not created!');
+            return auth.createAccount('test@test.com', '123456789').then((res) => {
+                return assert.equal(res.payload, 10, 'Test Email was not created!');
             });
         });
 
         it('Should delete the previously made test account from the database', () => {
             return auth.deleteAccount('test@test.com', '123456789').then((res) => {
-                assert.equal(res.payload, 0, 'Account could not be deleted!');
+                assert.equal(res.payload, 0, res.msg);
             });
         });
+
 
         it('Should Create an account with the facade class', () => {
             return fullAuth.registerUser('test@test.com', '123456789').then((res) => {
@@ -76,17 +77,17 @@ describe('Accounts', () => {
 
         it('Should Login an existing user with there credentials', () => {
             return fullAuth.login('test@test.com', '123456789').then((res) => {
-                assert.equal(res.payload, 11, 'Not able to login newly created user!');
+                assert.equal(res.payload, 11, res.msg);
             })
         });
 
-        it('Should return a signed JWT Token', () => {
-
-        });
-
-        it('Should Validate the JWT token as part of the basic strategy', () => {
-
-        });
+        // it('Should return a signed JWT Token', () => {
+        //
+        // });
+        //
+        // it('Should Validate the JWT token as part of the basic strategy', () => {
+        //
+        // });
 
         it('Should Delete an account created with the facade class', () => {
             return auth.deleteAccount('test@test.com', '123456789').then((res) => {

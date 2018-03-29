@@ -1,5 +1,9 @@
-import Promise from 'bluebird';
-import baseUserFunctions from "./authenticationBase";
+import 'babel-polyfill';
+import authenticationBase from "./authenticationBase";
+// Database Class.
+import db from '../../models/index';
+// Accounts Model
+const accounts = db.accounts;
 
 /**
  * Payload Numbering
@@ -9,7 +13,7 @@ import baseUserFunctions from "./authenticationBase";
  * 10 Account Creation
  * 11 Successful Login
  */
-export default class authentication extends baseUserFunctions {
+export default class authentication extends authenticationBase {
 
     constructor() {
         super();
@@ -23,33 +27,30 @@ export default class authentication extends baseUserFunctions {
      * @todo test with postman for if extra length is needed, also implementing special char check regexp
      * @param email
      * @param password
-     * @returns {Promise.<TResult>}
      * @constructor
      */
-    registerUser(email, password) {
-        return this.checkForDuplicateAccount(email.toLowerCase()).then((res) => {
+    async registerUser(email, password) {
 
-            if (res.payload !== 0) {
-                return {
-                    msg: res.msg
-                }
+        let result = await this.checkForDuplicateAccount(email.toLowerCase());
+
+        if (result.payload !== 0) {
+            return {
+                msg: result.msg
             }
+        }
 
-            if (password.length <= 5) {
-                return {
-                    msg: 'Password not long enough'
-                }
+        if (result.payload !== 0) {
+            return {
+                msg: result.msg
             }
+        }
 
-            return this.encryptPassword(password).then((pass) => {
-                return this.createAccount(email.toLowerCase(), pass).then((res) => {
-                    return {
-                        msg: 'New Account Created.',
-                        payload: res.payload
-                    }
-                })
-            });
-        });
+        let res = await this.createAccount(email.toLowerCase(), password);
+
+        return {
+            msg: 'New Account Created.',
+            payload: res.payload
+        };
     }
 
     /**
@@ -59,10 +60,8 @@ export default class authentication extends baseUserFunctions {
      * @param email
      * @param password
      */
-    login(email, password) {
-        return this.validateUser(email, password).then((res) => {
-            return res;
-        });
+    async login(email, password) {
+        return await this.validateUser(email, password);
     }
 
 
@@ -71,20 +70,20 @@ export default class authentication extends baseUserFunctions {
      * @param currPass
      * @param newPass
      * @param userID
-     * @returns {Bluebird<any> | Promise.<TResult>}
      */
-    updateUserPassword(currPass, newPass, userID) {
-        return this.getUserPasswordHash(userID).then((res) => {
-            return this.comparePasswords(res.hash, currPass);
-        }).then((res) => {
-            if (!res) {
-                return {
-                    status: 'err',
-                    message: 'Current Password does not match'
-                }
+    async updateUserPassword(currPass, newPass, userID) {
+        let res = await this.getUserPasswordHash(userID);
+
+        let compare = await this.comparePasswords(res.hash, currPass);
+
+        if (!res) {
+            return {
+                status: 'err',
+                message: 'Current Password does not match'
             }
-            return this.insertNewHashedPassword(userID, newPass);
-        });
+        }
+
+        return await this.insertNewHashedPassword(userID, newPass);
     }
 
 }

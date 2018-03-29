@@ -37,7 +37,7 @@ export default class authenticationBase {
 
         let foundAccounts = await accounts.findAll({where: {u_email: email}});
 
-        if (foundAccounts.length > 0) {
+        if (!foundAccounts.length > 0) {
             return {
                 msg: 'Account or password did not match!',
                 payload: 1
@@ -47,6 +47,7 @@ export default class authenticationBase {
         let res = await this.comparePasswords(foundAccounts[0].dataValues.u_password, password);
 
         if (!res) {
+            console.log("Second");
             return {
                 msg: 'Account or password did not match!',
                 payload: 1
@@ -117,7 +118,6 @@ export default class authenticationBase {
      * Find Account by Id
      */
     async findAccountById(id) {
-
         let res = await accounts.findAll({
             where: {
                 id: id
@@ -167,14 +167,14 @@ export default class authenticationBase {
      * @param password string
      */
     async createAccount(email, password) {
-        let pass = await auth.encryptPassword(password);
+        let pass = await this.encryptPassword(password);
         let createdAccount = await accounts.create({
             u_email: email,
             u_password: pass,
             accountType: 1,
             fullname: ''
         });
-        console.log(createdAccount);
+
         return {
             msg: 'Success', payload: 10
         };
@@ -185,33 +185,25 @@ export default class authenticationBase {
      *
      * Usage of this method should be heavily guarded as it is a standardized method that provides only base functionality with no security.
      */
-    deleteAccount(email, password) {
-        return this.getUserPasswordHashWithEmail(email).then((res) => {
+    async deleteAccount(email, password) {
 
-            // No has is returned with false'y calls.
-            if (!res.hasOwnProperty('hash')) {
-                return res;
-            }
+        let userObj = await this.getUserPasswordHashWithEmail(email);
 
-            // Compare passwords.
-            return this.comparePasswords(res.hash, password).then((bool) => {
-                if (!bool) {
-                    return {msg: 'Incorrect password provided for account delete', payload: 1}
-                }
+        // Make sure that hash property is found on result object
+        if (!userObj.user.dataValues.hasOwnProperty('u_password')) {
+            return {msg: 'An error occurred.', payload: 1}
+        }
 
-                // Finally delete the account.
-                return Promise.using(getSqlConnection(), (connection) => {
-                    return connection.query('DELETE FROM `accounts` WHERE u_email=?', [email]).then((res) => {
-                        return {msg: 'Account Successfully Deleted.', payload: 0};
-                    })
-                });
+        let bool = await this.comparePasswords(userObj.user.dataValues.u_password, password);
 
-            }).catch((e) => {
-                console.log(e);
-            });
-        }).catch((e) => {
-            console.log(e);
-        });
+        if (!bool) {
+            return {msg: 'Incorrect password provided for account delete', payload: 1}
+        }
+
+        // Remove the user.
+        await userObj.user.destroy({force: true});
+
+        return {msg: 'Success', payload: 0};
 
     }
 
@@ -220,30 +212,38 @@ export default class authenticationBase {
      * This method is only to be used when a validated user with an existing profile makes a call.
      * @param userID
      */
-    getUserPasswordHash(userID) {
-        return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('SELECT u_password from `accounts` WHERE id=?', [userID]).then((res) => {
-                return {hash: res[0].u_password}
-            });
+    async getUserPasswordHash(userID) {
+        let res = await accounts.findAll({
+            where: {
+                id: userID
+            }
         });
+
+        if (!res.length > 0) {
+            return {msg: 'Fail', payload: 1}
+        }
+
+        return {hash: res[0].dataValues.u_password, msg: 'Success', payload: 0};
     }
 
 
     /**
      * Helper method that get's a user hash using there email address, to be used alongside deletion of an existing account.
      * @param email
-     * @returns {Bluebird<any>}
      */
-    getUserPasswordHashWithEmail(email) {
-        return Promise.using(getSqlConnection(), (connection) => {
-            return connection.query('SELECT u_password from `accounts` WHERE u_email=?', [email]).then((res) => {
-                if (!res.length > 0) {
-                    return {msg: 'No Email found in accounts.', payload: 1};
-                }
+    async getUserPasswordHashWithEmail(email) {
 
-                return {hash: res[0].u_password};
-            })
+        let res = await accounts.findAll({
+            where: {
+                u_email: email
+            }
         });
+
+        if (!res.length > 0) {
+            return {msg: 'No Email found in accounts.', payload: 1};
+        }
+
+        return {user: res[0], payload: 0};
     }
 
     /**
@@ -259,9 +259,9 @@ export default class authenticationBase {
                         status: 'ok',
                         message: 'Password Changed!'
                     }
-                })
-            })
-        })
+                });
+            });
+        });
     }
 
 }

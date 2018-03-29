@@ -105,7 +105,7 @@ var authenticationBase = function () {
                             case 2:
                                 foundAccounts = _context2.sent;
 
-                                if (!(foundAccounts.length > 0)) {
+                                if (!(!foundAccounts.length > 0)) {
                                     _context2.next = 5;
                                     break;
                                 }
@@ -123,16 +123,17 @@ var authenticationBase = function () {
                                 res = _context2.sent;
 
                                 if (res) {
-                                    _context2.next = 10;
+                                    _context2.next = 11;
                                     break;
                                 }
 
+                                console.log("Second");
                                 return _context2.abrupt('return', {
                                     msg: 'Account or password did not match!',
                                     payload: 1
                                 });
 
-                            case 10:
+                            case 11:
                                 return _context2.abrupt('return', {
                                     msg: 'Success',
                                     payload: 11,
@@ -141,7 +142,7 @@ var authenticationBase = function () {
                                     }
                                 });
 
-                            case 11:
+                            case 12:
                             case 'end':
                                 return _context2.stop();
                         }
@@ -391,7 +392,7 @@ var authenticationBase = function () {
                         switch (_context7.prev = _context7.next) {
                             case 0:
                                 _context7.next = 2;
-                                return auth.encryptPassword(password);
+                                return this.encryptPassword(password);
 
                             case 2:
                                 pass = _context7.sent;
@@ -405,13 +406,11 @@ var authenticationBase = function () {
 
                             case 5:
                                 createdAccount = _context7.sent;
-
-                                console.log(createdAccount);
                                 return _context7.abrupt('return', {
                                     msg: 'Success', payload: 10
                                 });
 
-                            case 8:
+                            case 7:
                             case 'end':
                                 return _context7.stop();
                         }
@@ -434,35 +433,61 @@ var authenticationBase = function () {
 
     }, {
         key: 'deleteAccount',
-        value: function deleteAccount(email, password) {
-            var _this = this;
+        value: function () {
+            var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(email, password) {
+                var userObj, bool;
+                return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                    while (1) {
+                        switch (_context8.prev = _context8.next) {
+                            case 0:
+                                _context8.next = 2;
+                                return this.getUserPasswordHashWithEmail(email);
 
-            return this.getUserPasswordHashWithEmail(email).then(function (res) {
+                            case 2:
+                                userObj = _context8.sent;
 
-                // No has is returned with false'y calls.
-                if (!res.hasOwnProperty('hash')) {
-                    return res;
-                }
+                                if (userObj.user.dataValues.hasOwnProperty('u_password')) {
+                                    _context8.next = 5;
+                                    break;
+                                }
 
-                // Compare passwords.
-                return _this.comparePasswords(res.hash, password).then(function (bool) {
-                    if (!bool) {
-                        return { msg: 'Incorrect password provided for account delete', payload: 1 };
+                                return _context8.abrupt('return', { msg: 'An error occurred.', payload: 1 });
+
+                            case 5:
+                                _context8.next = 7;
+                                return this.comparePasswords(userObj.user.dataValues.u_password, password);
+
+                            case 7:
+                                bool = _context8.sent;
+
+                                if (bool) {
+                                    _context8.next = 10;
+                                    break;
+                                }
+
+                                return _context8.abrupt('return', { msg: 'Incorrect password provided for account delete', payload: 1 });
+
+                            case 10:
+                                _context8.next = 12;
+                                return userObj.user.destroy({ force: true });
+
+                            case 12:
+                                return _context8.abrupt('return', { msg: 'Success', payload: 0 });
+
+                            case 13:
+                            case 'end':
+                                return _context8.stop();
+                        }
                     }
+                }, _callee8, this);
+            }));
 
-                    // Finally delete the account.
-                    return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                        return connection.query('DELETE FROM `accounts` WHERE u_email=?', [email]).then(function (res) {
-                            return { msg: 'Account Successfully Deleted.', payload: 0 };
-                        });
-                    });
-                }).catch(function (e) {
-                    console.log(e);
-                });
-            }).catch(function (e) {
-                console.log(e);
-            });
-        }
+            function deleteAccount(_x11, _x12) {
+                return _ref8.apply(this, arguments);
+            }
+
+            return deleteAccount;
+        }()
 
         /**
          * Gets the users hashed and salted password for the database.
@@ -472,33 +497,96 @@ var authenticationBase = function () {
 
     }, {
         key: 'getUserPasswordHash',
-        value: function getUserPasswordHash(userID) {
-            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('SELECT u_password from `accounts` WHERE id=?', [userID]).then(function (res) {
-                    return { hash: res[0].u_password };
-                });
-            });
-        }
+        value: function () {
+            var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9(userID) {
+                var res;
+                return regeneratorRuntime.wrap(function _callee9$(_context9) {
+                    while (1) {
+                        switch (_context9.prev = _context9.next) {
+                            case 0:
+                                _context9.next = 2;
+                                return accounts.findAll({
+                                    where: {
+                                        id: userID
+                                    }
+                                });
+
+                            case 2:
+                                res = _context9.sent;
+
+                                if (!(!res.length > 0)) {
+                                    _context9.next = 5;
+                                    break;
+                                }
+
+                                return _context9.abrupt('return', { msg: 'Fail', payload: 1 });
+
+                            case 5:
+                                return _context9.abrupt('return', { hash: res[0].dataValues.u_password, msg: 'Success', payload: 0 });
+
+                            case 6:
+                            case 'end':
+                                return _context9.stop();
+                        }
+                    }
+                }, _callee9, this);
+            }));
+
+            function getUserPasswordHash(_x13) {
+                return _ref9.apply(this, arguments);
+            }
+
+            return getUserPasswordHash;
+        }()
 
         /**
          * Helper method that get's a user hash using there email address, to be used alongside deletion of an existing account.
          * @param email
-         * @returns {Bluebird<any>}
          */
 
     }, {
         key: 'getUserPasswordHashWithEmail',
-        value: function getUserPasswordHashWithEmail(email) {
-            return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                return connection.query('SELECT u_password from `accounts` WHERE u_email=?', [email]).then(function (res) {
-                    if (!res.length > 0) {
-                        return { msg: 'No Email found in accounts.', payload: 1 };
-                    }
+        value: function () {
+            var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(email) {
+                var res;
+                return regeneratorRuntime.wrap(function _callee10$(_context10) {
+                    while (1) {
+                        switch (_context10.prev = _context10.next) {
+                            case 0:
+                                _context10.next = 2;
+                                return accounts.findAll({
+                                    where: {
+                                        u_email: email
+                                    }
+                                });
 
-                    return { hash: res[0].u_password };
-                });
-            });
-        }
+                            case 2:
+                                res = _context10.sent;
+
+                                if (!(!res.length > 0)) {
+                                    _context10.next = 5;
+                                    break;
+                                }
+
+                                return _context10.abrupt('return', { msg: 'No Email found in accounts.', payload: 1 });
+
+                            case 5:
+                                return _context10.abrupt('return', { user: res[0], payload: 0 });
+
+                            case 6:
+                            case 'end':
+                                return _context10.stop();
+                        }
+                    }
+                }, _callee10, this);
+            }));
+
+            function getUserPasswordHashWithEmail(_x14) {
+                return _ref10.apply(this, arguments);
+            }
+
+            return getUserPasswordHashWithEmail;
+        }()
 
         /**
          * Inserts a new hashed password into the user account.

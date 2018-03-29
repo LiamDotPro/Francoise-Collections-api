@@ -19,6 +19,7 @@ describe('Accounts', function () {
     describe('Autentication Library', function () {
 
         var hash = '';
+        var userId = null;
 
         it('Find the default account by ID', function () {
             return auth.findAccountById(1).then(function (data) {
@@ -83,23 +84,30 @@ describe('Accounts', function () {
 
         it('Should Login an existing user with there credentials', function () {
             return fullAuth.login('test@test.com', '123456789').then(function (res) {
+                if (res.payload === 11) {
+                    userId = res.user.id;
+                }
                 assert.equal(res.payload, 11, res.msg);
             });
         });
 
-        // it('Should return a signed JWT Token', () => {
-        //
-        // });
-        //
-        // it('Should Validate the JWT token as part of the basic strategy', () => {
-        //
-        // });
-
-        it('Should Delete an account created with the facade class', function () {
-            return auth.deleteAccount('test@test.com', '123456789').then(function (res) {
-                assert.equal(res.payload, 0, 'Account could not be deleted!');
+        it('Should Change the password of the previously created account', function () {
+            return fullAuth.updateUserPassword('123456789', 'test123.', userId).then(function (res) {
+                assert.equal(res.payload, 0, res.msg);
             });
         });
+
+        it('Should Delete an account created with the facade class', function () {
+            return auth.deleteAccount('test@test.com', 'test123.').then(function (res) {
+                assert.equal(res.payload, 0, res.msg);
+            });
+        });
+    });
+
+    describe('Passport & JWT', function () {
+        it('Should return a signed JWT Token', function () {});
+
+        it('Should Validate the JWT token as part of the basic strategy', function () {});
     });
 });
 //# sourceMappingURL=accounts.js.map

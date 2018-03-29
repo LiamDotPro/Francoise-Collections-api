@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import {Router} from 'restify-router';
 /**
  * Path imports
@@ -23,6 +24,7 @@ const passport = new configuredPassport().passport;
  * Routes
  */
 router.post('/login', async (req, res, next) => {
+
     if (!req.body.email || !req.body.password) {
         res.json({
             message: 'bad',
@@ -31,30 +33,28 @@ router.post('/login', async (req, res, next) => {
         return next();
     }
 
-    auth.login(req.body.email, req.body.password).then((_res) => {
+    let loginAttempt = await auth.login(req.body.email, req.body.password);
 
-        console.log(req.body.email, req.body.password);
-
-        if (_res.payload !== 11) {
-            res.json({
-                message: 'bad',
-                error: 'Username or Password not found.'
-            });
-            return next();
-        }
-
-        let payload = {
-            id: _res.user.id
-        };
-
-        // setup session
-        req.session.key_name = _res.user.id;
-
-        // Sets expiration date
-        let token = jwt.sign(payload, jwtOptions.secretOrKey, {expiresIn: 60 * 60});
-        res.json({message: 'ok', token: token});
+    if (loginAttempt.payload !== 11) {
+        res.json({
+            message: 'bad',
+            error: 'Username or Password not found.'
+        });
         return next();
-    })
+    }
+
+    let payload = {
+        id: loginAttempt.user.id
+    };
+
+    // setup session
+    req.session.key_name = loginAttempt.user.id;
+
+    // Sets expiration date
+    let token = jwt.sign(payload, jwtOptions.secretOrKey, {expiresIn: 60 * 60});
+    res.json({message: 'ok', token: token});
+    return next();
+
 });
 
 router.get('/account', passport.authenticate('jwt', {session: false}), (req, res, next) => {

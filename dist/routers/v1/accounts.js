@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+require('babel-polyfill');
+
 var _restifyRouter = require('restify-router');
 
 var _authentication = require('../../library/Accounts/authentication');
@@ -47,6 +49,7 @@ var passport = new _Passport2.default().passport;
  */
 router.post('/login', function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(req, res, next) {
+        var loginAttempt, payload, token;
         return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
                 switch (_context.prev = _context.next) {
@@ -63,33 +66,39 @@ router.post('/login', function () {
                         return _context.abrupt('return', next());
 
                     case 3:
+                        _context.next = 5;
+                        return auth.login(req.body.email, req.body.password);
 
-                        auth.login(req.body.email, req.body.password).then(function (_res) {
+                    case 5:
+                        loginAttempt = _context.sent;
 
-                            console.log(req.body.email, req.body.password);
+                        if (!(loginAttempt.payload !== 11)) {
+                            _context.next = 9;
+                            break;
+                        }
 
-                            if (_res.payload !== 11) {
-                                res.json({
-                                    message: 'bad',
-                                    error: 'Username or Password not found.'
-                                });
-                                return next();
-                            }
-
-                            var payload = {
-                                id: _res.user.id
-                            };
-
-                            // setup session
-                            req.session.key_name = _res.user.id;
-
-                            // Sets expiration date
-                            var token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey, { expiresIn: 60 * 60 });
-                            res.json({ message: 'ok', token: token });
-                            return next();
+                        res.json({
+                            message: 'bad',
+                            error: 'Username or Password not found.'
                         });
+                        return _context.abrupt('return', next());
 
-                    case 4:
+                    case 9:
+                        payload = {
+                            id: loginAttempt.user.id
+                        };
+
+                        // setup session
+
+                        req.session.key_name = loginAttempt.user.id;
+
+                        // Sets expiration date
+                        token = _jsonwebtoken2.default.sign(payload, jwtOptions.secretOrKey, { expiresIn: 60 * 60 });
+
+                        res.json({ message: 'ok', token: token });
+                        return _context.abrupt('return', next());
+
+                    case 14:
                     case 'end':
                         return _context.stop();
                 }

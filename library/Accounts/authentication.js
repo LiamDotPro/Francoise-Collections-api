@@ -74,12 +74,21 @@ export default class authentication extends authenticationBase {
     async updateUserPassword(currPass, newPass, userID) {
         let res = await this.getUserPasswordHash(userID);
 
+        // Check if an error occured inside of getUserPasswordHash
+        if (res.payload > 0) {
+            return {
+                payload: 1,
+                msg: 'Account could not be found when attempting to change passwords'
+            }
+        }
+
         let compare = await this.comparePasswords(res.hash, currPass);
 
-        if (!res) {
+        // Password Comparision failed.
+        if (!compare) {
             return {
-                status: 'err',
-                message: 'Current Password does not match'
+                payload: 1,
+                msg: 'Current Password does not match'
             }
         }
 

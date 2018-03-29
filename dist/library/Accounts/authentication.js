@@ -179,30 +179,42 @@ var authentication = function (_authenticationBase) {
 
                             case 2:
                                 res = _context3.sent;
-                                _context3.next = 5;
-                                return this.comparePasswords(res.hash, currPass);
 
-                            case 5:
-                                compare = _context3.sent;
-
-                                if (res) {
-                                    _context3.next = 8;
+                                if (!(res.payload > 0)) {
+                                    _context3.next = 5;
                                     break;
                                 }
 
                                 return _context3.abrupt('return', {
-                                    status: 'err',
-                                    message: 'Current Password does not match'
+                                    payload: 1,
+                                    msg: 'Account could not be found when attempting to change passwords'
                                 });
 
-                            case 8:
-                                _context3.next = 10;
-                                return this.insertNewHashedPassword(userID, newPass);
+                            case 5:
+                                _context3.next = 7;
+                                return this.comparePasswords(res.hash, currPass);
+
+                            case 7:
+                                compare = _context3.sent;
+
+                                if (compare) {
+                                    _context3.next = 10;
+                                    break;
+                                }
+
+                                return _context3.abrupt('return', {
+                                    payload: 1,
+                                    msg: 'Current Password does not match'
+                                });
 
                             case 10:
+                                _context3.next = 12;
+                                return this.insertNewHashedPassword(userID, newPass);
+
+                            case 12:
                                 return _context3.abrupt('return', _context3.sent);
 
-                            case 11:
+                            case 13:
                             case 'end':
                                 return _context3.stop();
                         }

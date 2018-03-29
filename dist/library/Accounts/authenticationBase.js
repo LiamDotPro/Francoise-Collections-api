@@ -8,14 +8,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 require('babel-polyfill');
 
-var _db = require('../../db/db');
-
-var _db2 = _interopRequireDefault(_db);
-
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
 var _bcrypt = require('bcrypt');
 
 var _bcrypt2 = _interopRequireDefault(_bcrypt);
@@ -26,7 +18,7 @@ var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -596,18 +588,68 @@ var authenticationBase = function () {
 
     }, {
         key: 'insertNewHashedPassword',
-        value: function insertNewHashedPassword(id, password) {
-            return this.encryptPassword(password).then(function (hash) {
-                return _bluebird2.default.using((0, _db2.default)(), function (connection) {
-                    return connection.query('UPDATE `accounts` SET u_password=? WHERE id=?', [hash, id]).then(function () {
-                        return {
-                            status: 'ok',
-                            message: 'Password Changed!'
-                        };
-                    });
-                });
-            });
-        }
+        value: function () {
+            var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee11(id, password) {
+                var account, hashedPassword;
+                return regeneratorRuntime.wrap(function _callee11$(_context11) {
+                    while (1) {
+                        switch (_context11.prev = _context11.next) {
+                            case 0:
+                                _context11.next = 2;
+                                return accounts.findAll({
+                                    where: {
+                                        id: id
+                                    }
+                                });
+
+                            case 2:
+                                account = _context11.sent;
+
+                                if (!(!account.length > 0)) {
+                                    _context11.next = 5;
+                                    break;
+                                }
+
+                                return _context11.abrupt('return', {
+                                    msg: 'Account not found!',
+                                    payload: 1
+                                });
+
+                            case 5:
+                                _context11.next = 7;
+                                return this.encryptPassword(password);
+
+                            case 7:
+                                hashedPassword = _context11.sent;
+                                _context11.next = 10;
+                                return accounts.update({
+                                    u_password: hashedPassword
+                                }, {
+                                    where: {
+                                        id: id
+                                    }
+                                });
+
+                            case 10:
+                                return _context11.abrupt('return', {
+                                    msg: 'Password Changed!',
+                                    payload: 0
+                                });
+
+                            case 11:
+                            case 'end':
+                                return _context11.stop();
+                        }
+                    }
+                }, _callee11, this);
+            }));
+
+            function insertNewHashedPassword(_x15, _x16) {
+                return _ref11.apply(this, arguments);
+            }
+
+            return insertNewHashedPassword;
+        }()
     }]);
 
     return authenticationBase;

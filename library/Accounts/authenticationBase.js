@@ -1,7 +1,5 @@
 require('dotenv').config();
 import 'babel-polyfill';
-import getSqlConnection from '../../db/db';
-import Promise from 'bluebird';
 import bcrypt from 'bcrypt';
 // Database Class.
 import db from '../../models/index';
@@ -251,17 +249,35 @@ export default class authenticationBase {
      * @param id
      * @param password
      */
-    insertNewHashedPassword(id, password) {
-        return this.encryptPassword(password).then((hash) => {
-            return Promise.using(getSqlConnection(), (connection) => {
-                return connection.query('UPDATE `accounts` SET u_password=? WHERE id=?', [hash, id]).then(() => {
-                    return {
-                        status: 'ok',
-                        message: 'Password Changed!'
-                    }
-                });
-            });
+    async insertNewHashedPassword(id, password) {
+
+        let account = await accounts.findAll({
+            where: {
+                id: id
+            }
         });
+
+        if (!account.length > 0) {
+            return {
+                msg: 'Account not found!',
+                payload: 1
+            }
+        }
+
+        let hashedPassword = await this.encryptPassword(password);
+
+        await accounts.update({
+            u_password: hashedPassword
+        }, {
+            where: {
+                id: id
+            }
+        });
+
+        return {
+            msg: 'Password Changed!',
+            payload: 0
+        };
     }
 
 }

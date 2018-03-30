@@ -47,12 +47,21 @@ router.post('/login', passport.authenticate('local'), function () {
     };
 }());
 
-router.post('/logout', function (req, res, next) {});
-
-router.post('/validate', _Passport.requireAuthenticated, function (req, res, next) {
-    res.json({ msg: 'Successfully logged in against user.' });
-    next();
+router.post('/logout', function (req, res, next) {
+    req.logout();
+    res.send({ msg: 'You have been successfully logged out', payload: 0 });
+    return next();
 });
+
+/**
+ * This route is only available during development.
+ */
+if (process.env.ENVIROMENT === 'development') {
+    router.post('/validate', _Passport.requireAuthenticated, function (req, res, next) {
+        res.json({ msg: 'Successfully logged in against user.', payload: 0 });
+        return next();
+    });
+}
 
 exports.default = router;
 //# sourceMappingURL=authentication.js.map

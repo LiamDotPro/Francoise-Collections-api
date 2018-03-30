@@ -50,3 +50,4 @@ Temporary Items
 .idea
 .nyc_output
 .private
+.eslintrc.js

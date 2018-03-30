@@ -7,7 +7,6 @@ import configuredPassport, {requireAuthenticated} from '../../library/Passport/P
 const router = new Router();
 const passport = new configuredPassport().passport;
 
-
 /**
  * Routes
  */

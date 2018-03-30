@@ -1,6 +1,4 @@
 import 'babel-polyfill';
-// Configure out environment to be available.
-require('dotenv').config();
 // Restify
 import restify from 'restify';
 //helmet
@@ -18,6 +16,8 @@ import CatalogRouter from './routers/v1/catalog';
 import AccountRouter from './routers/v1/accounts';
 import CartRouter from './routers/v1/cart';
 import {setup} from './socketio/io';
+// Configure out environment to be available.
+require('dotenv').config();
 
 let session = require('express-session');
 let redisStore = require('connect-redis')(session);
@@ -57,14 +57,6 @@ server.use(helmet());
 server.use(morgan('dev'));
 
 /**
- * Passport JWT
- */
-let configuredPassport = new passport();
-// Only configure the passport once.
-configuredPassport.configurePassport();
-server.use(configuredPassport.passport.initialize());
-
-/**
  * Reddis Sessions
  */
 server.use(session({
@@ -82,6 +74,15 @@ client.on('connect', function () {
 client.on('error', function (err) {
     console.log('Redis error: ' + err);
 });
+
+/**
+ * Passport JWT
+ */
+let configuredPassport = new passport();
+// Only configure the passport once.
+configuredPassport.configurePassport();
+server.use(configuredPassport.passport.initialize());
+server.use(configuredPassport.passport.session());
 
 /**
  * Handle Cross Origin Requests.

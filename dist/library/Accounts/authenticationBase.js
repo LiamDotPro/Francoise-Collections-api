@@ -115,17 +115,16 @@ var authenticationBase = function () {
                                 res = _context2.sent;
 
                                 if (res) {
-                                    _context2.next = 11;
+                                    _context2.next = 10;
                                     break;
                                 }
 
-                                console.log("Second");
                                 return _context2.abrupt('return', {
                                     msg: 'Account or password did not match!',
                                     payload: 1
                                 });
 
-                            case 11:
+                            case 10:
                                 return _context2.abrupt('return', {
                                     msg: 'Success',
                                     payload: 11,
@@ -134,7 +133,7 @@ var authenticationBase = function () {
                                     }
                                 });
 
-                            case 12:
+                            case 11:
                             case 'end':
                                 return _context2.stop();
                         }

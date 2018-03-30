@@ -47,18 +47,18 @@ var _io = require('./socketio/io');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Configure out environment to be available.
-require('dotenv').config();
-// Restify
 
-//helmet
-
-//morgan
+// Routers
 
 //Passport
 
+//helmet
+require('dotenv').config();
 // express connect reddis
 
-// Routers
+//morgan
+
+// Restify
 
 
 var session = require('express-session');
@@ -99,14 +99,6 @@ server.use((0, _helmet2.default)());
 server.use((0, _morgan2.default)('dev'));
 
 /**
- * Passport JWT
- */
-var configuredPassport = new _Passport2.default();
-// Only configure the passport once.
-configuredPassport.configurePassport();
-server.use(configuredPassport.passport.initialize());
-
-/**
  * Reddis Sessions
  */
 server.use(session({
@@ -124,6 +116,15 @@ client.on('connect', function () {
 client.on('error', function (err) {
   console.log('Redis error: ' + err);
 });
+
+/**
+ * Passport JWT
+ */
+var configuredPassport = new _Passport2.default();
+// Only configure the passport once.
+configuredPassport.configurePassport();
+server.use(configuredPassport.passport.initialize());
+server.use(configuredPassport.passport.session());
 
 /**
  * Handle Cross Origin Requests.

@@ -45,7 +45,6 @@ export default class authenticationBase {
         let res = await this.comparePasswords(foundAccounts[0].dataValues.u_password, password);
 
         if (!res) {
-            console.log("Second");
             return {
                 msg: 'Account or password did not match!',
                 payload: 1

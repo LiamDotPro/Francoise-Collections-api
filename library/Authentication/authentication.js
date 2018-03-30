@@ -1,9 +1,5 @@
 import 'babel-polyfill';
 import authenticationBase from "./authenticationBase";
-// Database Class.
-import db from '../../models/index';
-// Accounts Model
-const accounts = db.accounts;
 
 /**
  * Payload Numbering
@@ -63,7 +59,6 @@ export default class authentication extends authenticationBase {
     async login(email, password) {
         return await this.validateUser(email, password);
     }
-
 
     /**
      * Updates a users password provided they pass the original current password.

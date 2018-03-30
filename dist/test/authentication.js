@@ -1,45 +1,106 @@
 'use strict';
 
-require('babel-polyfill');
-
-var _index = require('../models/index');
-
-var _index2 = _interopRequireDefault(_index);
-
-var _authenticationBase = require('../library/Accounts/authenticationBase');
+var _authenticationBase = require('../library/Authentication/authenticationBase');
 
 var _authenticationBase2 = _interopRequireDefault(_authenticationBase);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _authentication = require('../library/Authentication/authentication');
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+var _authentication2 = _interopRequireDefault(_authentication);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var assert = require('chai').assert;
 
-var accounts = _index2.default.accounts;
 var auth = new _authenticationBase2.default();
+var fullAuth = new _authentication2.default();
 
-describe('Test', function () {
-    describe('create a user', _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-                switch (_context.prev = _context.next) {
-                    case 0:
-                    case 'end':
-                        return _context.stop();
+describe('Accounts', function () {
+    describe('Autentication Library', function () {
+        var hash = '';
+        var userId = null;
+
+        it('Should find the default account by ID', function () {
+            return auth.findAccountById(1).then(function (data) {
+                return assert.equal(data.email, 'liam@liam.pro');
+            });
+        });
+
+        it('Should  create a hash given an arbitary password', function () {
+            return auth.encryptPassword('123456789').then(function (hashedPassword) {
+                hash = hashedPassword;
+                return assert.isOk(hashedPassword, 'Hash Not created');
+            });
+        });
+
+        it('Should correctly compare a hashed password - Correct', function () {
+            return auth.comparePasswords(hash, '123456789').then(function (res) {
+                return assert.isOk(res);
+            });
+        });
+
+        it('Should orrectly compare a hashed password - False', function () {
+            return auth.comparePasswords(hash, '12345678').then(function (res) {
+                return assert.isNotOk(res);
+            });
+        });
+
+        it('Should find a duplicate account', function () {
+            return auth.checkForDuplicateAccount('liam@liam.pro').then(function (res) {
+                assert.equal(res.payload, 1);
+            });
+        });
+
+        it('Should catch a string that is empty while searching for duplicate', function () {
+            return auth.checkForDuplicateAccount('').then(function (res) {
+                assert.equal(res.msg, 'Fail - No Email Found');
+            });
+        });
+
+        it('Should catch a string that is not a complete email while searching for duplicate', function () {
+            return auth.checkForDuplicateAccount('asdasd@t').then(function (res) {
+                return assert.equal(res.msg, 'Fail - No Email Found', 'Email duplicate check failed with bad email!');
+            });
+        });
+
+        it('Should Create an account given an email and a password', function () {
+            return auth.createAccount('test@test.com', '123456789').then(function (res) {
+                return assert.equal(res.payload, 10, 'Test Email was not created!');
+            });
+        });
+
+        it('Should delete the previously made test account from the database', function () {
+            return auth.deleteAccount('test@test.com', '123456789').then(function (res) {
+                assert.equal(res.payload, 0, res.msg);
+            });
+        });
+
+        it('Should Create an account with the facade class', function () {
+            return fullAuth.registerUser('test@test.com', '123456789').then(function (res) {
+                assert.equal(res.payload, 10, 'Facade class did not create an account!');
+            });
+        });
+
+        it('Should Login an existing user with there credentials', function () {
+            return fullAuth.login('test@test.com', '123456789').then(function (res) {
+                if (res.payload === 11) {
+                    userId = res.user.id;
                 }
-            }
-        }, _callee, undefined);
-    }))
-    // let password = await auth.encryptPassword('Belkinlr93.');
-    // accounts.create({
-    //     u_email: 'liam.pro',
-    //     u_password: password,
-    //     accountType: 2,
-    //     fullname: 'Liam Read'
-    // }).then((user) => {
-    //     console.log(user);
-    // })
-    );
+                assert.equal(res.payload, 11, res.msg);
+            });
+        });
+
+        it('Should Change the password of the previously created account', function () {
+            return fullAuth.updateUserPassword('123456789', 'test123.', userId).then(function (res) {
+                assert.equal(res.payload, 0, res.msg);
+            });
+        });
+
+        it('Should Delete an account created with the facade class', function () {
+            return auth.deleteAccount('test@test.com', 'test123.').then(function (res) {
+                assert.equal(res.payload, 0, res.msg);
+            });
+        });
+    });
 });
 //# sourceMappingURL=authentication.js.map

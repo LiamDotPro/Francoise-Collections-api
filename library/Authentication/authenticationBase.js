@@ -203,7 +203,7 @@ export default class authenticationBase {
         return {msg: 'Success', payload: 0};
 
     }
-
+    
     /**
      * Gets the users hashed and salted password for the database.
      * This method is only to be used when a validated user with an existing profile makes a call.

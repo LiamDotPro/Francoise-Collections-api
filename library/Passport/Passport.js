@@ -1,4 +1,4 @@
-import Auth from '../Accounts/authentication';
+import Auth from '../Authentication/authentication';
 import passport from 'passport';
 
 require('dotenv').config();

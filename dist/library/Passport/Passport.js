@@ -8,7 +8,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 exports.requireAuthenticated = requireAuthenticated;
 
-var _authentication = require('../Accounts/authentication');
+var _authentication = require('../Authentication/authentication');
 
 var _authentication2 = _interopRequireDefault(_authentication);
 

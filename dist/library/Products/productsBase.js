@@ -22,7 +22,7 @@ require('dotenv').config();
 // Database Class.
 
 // Products model
-var products = _index2.default.products;
+var products = _index2.default.product;
 
 var productsBase = function () {
     function productsBase() {
@@ -35,7 +35,6 @@ var productsBase = function () {
 
     /**
      * Gets all products from the database.
-     * @returns {Promise<void>}
      */
 
 
@@ -43,15 +42,65 @@ var productsBase = function () {
         key: 'getAllProducts',
         value: function () {
             var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                var allProducts, productList;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
+                                _context.prev = 0;
+                                _context.next = 3;
+                                return products.findAll();
+
+                            case 3:
+                                allProducts = _context.sent;
+
+                                if (!(allProducts.length <= 0)) {
+                                    _context.next = 6;
+                                    break;
+                                }
+
+                                return _context.abrupt('return', {
+                                    msg: 'No products found..',
+                                    payload: 1
+                                });
+
+                            case 6:
+                                productList = allProducts.map(function (item, index, arr) {
+                                    return {
+                                        id: item.dataValues.id,
+                                        index: index,
+                                        productName: item.dataValues.productName,
+                                        productDesc: item.dataValues.productDesc,
+                                        productThumbnail: item.dataValues.productThumbnail,
+                                        productDispatchTime: item.dataValues.productDispatchTime,
+                                        productInventory: item.dataValues.productInventory,
+                                        startSale: item.dataValues.startSale,
+                                        endSale: item.dataValues.endSale,
+                                        status: item.dataValues.status,
+                                        eligibleForDiscount: item.dataValues.eligibleForDiscount,
+                                        createdAt: item.dataValues.createdAt
+                                    };
+                                });
+                                return _context.abrupt('return', {
+                                    msg: 'Success',
+                                    payload: 0,
+                                    productList: productList
+                                });
+
+                            case 10:
+                                _context.prev = 10;
+                                _context.t0 = _context['catch'](0);
+                                return _context.abrupt('return', {
+                                    msg: 'An error occurred while trying to get the products list',
+                                    payload: 1
+                                });
+
+                            case 13:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this);
+                }, _callee, this, [[0, 10]]);
             }));
 
             function getAllProducts() {
@@ -63,17 +112,43 @@ var productsBase = function () {
 
         /**
          * Gets a specific product by it's Unique Identifier.
-         * @returns {Promise<void>}
+         * @param id
          */
 
     }, {
         key: 'getProductById',
         value: function () {
-            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(id) {
+                var product;
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
+                                _context2.next = 2;
+                                return products.findAll({
+                                    where: {
+                                        id: id
+                                    }
+                                });
+
+                            case 2:
+                                product = _context2.sent;
+
+                                if (!(product.length <= 0)) {
+                                    _context2.next = 5;
+                                    break;
+                                }
+
+                                return _context2.abrupt('return', {
+                                    msg: 'No product was found..',
+                                    payload: 1
+                                });
+
+                            case 5:
+
+                                console.log(product);
+
+                            case 6:
                             case 'end':
                                 return _context2.stop();
                         }
@@ -81,7 +156,7 @@ var productsBase = function () {
                 }, _callee2, this);
             }));
 
-            function getProductById() {
+            function getProductById(_x) {
                 return _ref2.apply(this, arguments);
             }
 
@@ -90,6 +165,9 @@ var productsBase = function () {
 
         /**
          * Creates a new instance of product.
+         *
+         * status: 0 draft, 1 live
+         *
          * @param name
          * @param description
          * @param thumbnail
@@ -99,25 +177,51 @@ var productsBase = function () {
          * @param productInventory
          * @param startSaleDate
          * @param endSaleDate
-         * @returns {Promise<void>}
          */
 
     }, {
         key: 'createProduct',
         value: function () {
             var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
+                var createdProduct;
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
+                                _context3.prev = 0;
+                                _context3.next = 3;
+                                return products.create({
+                                    productName: name,
+                                    productDesc: description,
+                                    productThumbnail: thumbnail,
+                                    productDispatchTime: dispatchTime,
+                                    status: status,
+                                    eligibleForDiscount: eligibleForDiscount,
+                                    productInventory: productInventory,
+                                    startSale: startSaleDate,
+                                    endSale: endSaleDate
+                                });
+
+                            case 3:
+                                createdProduct = _context3.sent;
+                                return _context3.abrupt('return', { msg: 'Success', payload: 0, insertedId: createdProduct.dataValues.id });
+
+                            case 7:
+                                _context3.prev = 7;
+                                _context3.t0 = _context3['catch'](0);
+
+                                console.log(_context3.t0);
+                                return _context3.abrupt('return', { msg: 'An error occurred while trying to create a new product', payload: 1 });
+
+                            case 11:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this);
+                }, _callee3, this, [[0, 7]]);
             }));
 
-            function createProduct(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {
+            function createProduct(_x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10) {
                 return _ref3.apply(this, arguments);
             }
 
@@ -136,7 +240,6 @@ var productsBase = function () {
          * @param productInventory
          * @param startSaleDate
          * @param endSaleDate
-         * @returns {Promise<void>}
          */
 
     }, {
@@ -154,7 +257,7 @@ var productsBase = function () {
                 }, _callee4, this);
             }));
 
-            function updateProductById(_x10, _x11, _x12, _x13, _x14, _x15, _x16, _x17, _x18, _x19) {
+            function updateProductById(_x11, _x12, _x13, _x14, _x15, _x16, _x17, _x18, _x19, _x20) {
                 return _ref4.apply(this, arguments);
             }
 
@@ -182,7 +285,7 @@ var productsBase = function () {
                 }, _callee5, this);
             }));
 
-            function deleteProduct(_x20) {
+            function deleteProduct(_x21) {
                 return _ref5.apply(this, arguments);
             }
 

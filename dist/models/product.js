@@ -7,8 +7,8 @@ module.exports = function (sequelize, DataTypes) {
         productThumbnail: DataTypes.STRING,
         productDispatchTime: DataTypes.STRING,
         productInventory: DataTypes.INTEGER,
-        startSale: DataTypes.DATE,
-        endSale: DataTypes.DATE,
+        startSale: DataTypes.DATEONLY,
+        endSale: DataTypes.DATEONLY,
         status: DataTypes.INTEGER,
         eligibleForDiscount: DataTypes.BOOLEAN
     }, {});

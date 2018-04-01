@@ -20,6 +20,7 @@
     "connect-redis": "^3.3.3",
     "dotenv": "^5.0.1",
     "express-session": "^1.15.6",
+    "fs-readfile-promise": "^3.0.1",
     "global": "^4.3.2",
     "helmet": "^3.12.0",
     "jsonwebtoken": "^8.2.0",
@@ -27,6 +28,7 @@
     "moment": "^2.22.0",
     "moment-timezone": "^0.5.14",
     "morgan": "^1.9.0",
+    "nyc": "^11.6.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -40,8 +42,7 @@
     "sequelize": "^4.37.4",
     "sequelize-cli": "^4.0.0",
     "socket.io": "^2.0.4",
-    "stripe": "^5.5.0",
-    "nyc": "^11.6.0"
+    "stripe": "^5.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

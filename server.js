@@ -9,6 +9,8 @@ import morgan from 'morgan';
 import passport from './library/Passport/Passport';
 // express connect reddis
 import redis from 'redis';
+// Readfile ES6
+import fsRead from 'fs-readfile-promise';
 // Routers
 import AuthRouter from './routers/v1/authentication';
 import PayRouter from './routers/v1/payments';
@@ -25,7 +27,7 @@ let client = redis.createClient({host: '109.237.26.131', port: 6379});
 
 let port = 3000;
 
-process.env.ENVIROMENT === 'development' ? port = 3000 : port = 80;
+process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
 
 let server = restify.createServer({
     name: 'Main Http Server',
@@ -134,17 +136,10 @@ server.use((req, res, next) => {
 server.get(
     /\/(.*)?.*/,
     restify.plugins.serveStatic({
-        directory: './public',
+        directory: __dirname + '/public',
+        default:  '/index.html'
     })
 );
-
-/**
- * Makes the default accepted headers application/json only.
- */
-server.pre(function (req, res, next) {
-    req.headers.accept = 'application/json';
-    return next();
-});
 
 server.listen(port, function () {
     console.log('Http Server listening on ', port);

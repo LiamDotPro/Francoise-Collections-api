@@ -22,6 +22,10 @@ var _redis = require('redis');
 
 var _redis2 = _interopRequireDefault(_redis);
 
+var _fsReadfilePromise = require('fs-readfile-promise');
+
+var _fsReadfilePromise2 = _interopRequireDefault(_fsReadfilePromise);
+
 var _authentication = require('./routers/v1/authentication');
 
 var _authentication2 = _interopRequireDefault(_authentication);
@@ -50,15 +54,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // Routers
 
-//Passport
-
-//helmet
-require('dotenv').config();
 // express connect reddis
 
 //morgan
 
 // Restify
+require('dotenv').config();
+// Readfile ES6
+
+//Passport
+
+//helmet
 
 
 var session = require('express-session');
@@ -67,7 +73,7 @@ var client = _redis2.default.createClient({ host: '109.237.26.131', port: 6379 }
 
 var port = 3000;
 
-process.env.ENVIROMENT === 'development' ? port = 3000 : port = 80;
+process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
 
 var server = _restify2.default.createServer({
   name: 'Main Http Server',
@@ -172,16 +178,9 @@ server.use(function (req, res, next) {
  * Handle the serving of static files that live within public.
  */
 server.get(/\/(.*)?.*/, _restify2.default.plugins.serveStatic({
-  directory: './public'
+  directory: __dirname + '/public',
+  default: '/index.html'
 }));
-
-/**
- * Makes the default accepted headers application/json only.
- */
-server.pre(function (req, res, next) {
-  req.headers.accept = 'application/json';
-  return next();
-});
 
 server.listen(port, function () {
   console.log('Http Server listening on ', port);

@@ -4,5 +4,5 @@ node_js:
 install:
  - npm install -g codecov
 script:
-  - nyc ./node_modules/mocha/bin/_mocha dist/test --reporter lcovonly -- -R spec
+  - nyc --reporter lcovonly -- -R spec npm test
   - codecov --token=b2def157-0656-48f5-9ff7-ef9dfad470f1

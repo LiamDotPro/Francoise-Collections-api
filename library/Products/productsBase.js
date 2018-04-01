@@ -118,7 +118,7 @@ export default class productsBase {
      */
     async updateProductById(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
 
-        
+
 
     }
 

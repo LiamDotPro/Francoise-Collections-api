@@ -44,7 +44,7 @@ describe('Accounts', () => {
 
         it('Should catch a string that is empty while searching for duplicate', () => {
             return auth.checkForDuplicateAccount('').then((res) => {
-                assert.equal(res.msg, 'Fail - No Email Found',);
+                return assert.equal(res.msg, 'Fail - No Email Found',);
             });
         });
 
@@ -62,14 +62,14 @@ describe('Accounts', () => {
 
         it('Should delete the previously made test account from the database', () => {
             return auth.deleteAccount('test@test.com', '123456789').then((res) => {
-                assert.equal(res.payload, 0, res.msg);
+                return assert.equal(res.payload, 0, res.msg);
             });
         });
 
 
         it('Should Create an account with the facade class', () => {
             return fullAuth.registerUser('test@test.com', '123456789').then((res) => {
-                assert.equal(res.payload, 10, 'Facade class did not create an account!');
+                return assert.equal(res.payload, 10, 'Facade class did not create an account!');
             })
         });
 
@@ -79,19 +79,19 @@ describe('Accounts', () => {
                 if (res.payload === 11) {
                     userId = res.user.id;
                 }
-                assert.equal(res.payload, 11, res.msg);
+                return assert.equal(res.payload, 11, res.msg);
             })
         });
 
         it('Should Change the password of the previously created account', () => {
             return fullAuth.updateUserPassword('123456789', 'test123.', userId).then((res) => {
-                assert.equal(res.payload, 0, res.msg);
+                return assert.equal(res.payload, 0, res.msg);
             })
         });
 
         it('Should Delete an account created with the facade class', () => {
             return auth.deleteAccount('test@test.com', 'test123.').then((res) => {
-                assert.equal(res.payload, 0, res.msg);
+                return assert.equal(res.payload, 0, res.msg);
             });
         });
 

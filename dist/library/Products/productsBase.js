@@ -67,18 +67,8 @@ var productsBase = function () {
                             case 6:
                                 productList = allProducts.map(function (item, index, arr) {
                                     return {
-                                        id: item.dataValues.id,
-                                        index: index,
-                                        productName: item.dataValues.productName,
-                                        productDesc: item.dataValues.productDesc,
-                                        productThumbnail: item.dataValues.productThumbnail,
-                                        productDispatchTime: item.dataValues.productDispatchTime,
-                                        productInventory: item.dataValues.productInventory,
-                                        startSale: item.dataValues.startSale,
-                                        endSale: item.dataValues.endSale,
-                                        status: item.dataValues.status,
-                                        eligibleForDiscount: item.dataValues.eligibleForDiscount,
-                                        createdAt: item.dataValues.createdAt
+                                        product: item.dataValues,
+                                        index: index
                                     };
                                 });
                                 return _context.abrupt('return', {
@@ -145,8 +135,7 @@ var productsBase = function () {
                                 });
 
                             case 5:
-
-                                console.log(product);
+                                return _context2.abrupt('return', { msg: 'Success', payload: 0, product: product[0].dataValues });
 
                             case 6:
                             case 'end':
@@ -267,7 +256,6 @@ var productsBase = function () {
         /**
          * Soft delete a product.
          * @param id
-         * @returns {Promise<void>}
          */
 
     }, {
@@ -278,11 +266,36 @@ var productsBase = function () {
                     while (1) {
                         switch (_context5.prev = _context5.next) {
                             case 0:
+                                if (id) {
+                                    _context5.next = 2;
+                                    break;
+                                }
+
+                                return _context5.abrupt('return', { msg: 'No Id specified..', payload: 1 });
+
+                            case 2:
+                                _context5.prev = 2;
+                                _context5.next = 5;
+                                return products.destroy({
+                                    where: {
+                                        id: id
+                                    }
+                                });
+
+                            case 5:
+                                return _context5.abrupt('return', !!_context5.sent);
+
+                            case 8:
+                                _context5.prev = 8;
+                                _context5.t0 = _context5['catch'](2);
+                                return _context5.abrupt('return', false);
+
+                            case 11:
                             case 'end':
                                 return _context5.stop();
                         }
                     }
-                }, _callee5, this);
+                }, _callee5, this, [[2, 8]]);
             }));
 
             function deleteProduct(_x21) {

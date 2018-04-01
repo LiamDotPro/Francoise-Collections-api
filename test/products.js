@@ -8,27 +8,34 @@ const products = new ProductBase();
 describe('Products', () => {
     describe('Products Base Library', () => {
 
+        let createdItemId = null;
+
         it('Should create a new product', async () => {
-            //let result = await products.createProduct('Test Product', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, 10, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
-            //assert.equal(0, result.payload, result.msg);
+            let result = await products.createProduct('Test Product', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, 10, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
+            createdItemId = result.insertedId;
+            return assert.equal(0, result.payload, result.msg);
         });
 
         it('Should get all products', async () => {
             let result = await products.getAllProducts();
-            assert.isAbove(result.productList.length, 0, result.msg);
+            return assert.isAbove(result.productList.length, 0, result.msg);
         });
 
         it('Should get default product using ID', async () => {
-
+            let result = await products.getProductById(createdItemId);
+            return assert.equal(0, result.payload, result.msg);
         });
 
+        it('Should get products based on pagination', () => {
+        });
 
-        it('Should update the previously made product', async () => {
+        it('Should update the previously made product', () => {
 
         });
 
         it('Should delete the previously made product', async () => {
-
+            let result = await products.deleteProduct(createdItemId);
+            return assert.isTrue(result, "Record could not be deleted..");
         });
 
     });

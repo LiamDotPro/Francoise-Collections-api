@@ -28,18 +28,8 @@ export default class productsBase {
 
             let productList = allProducts.map((item, index, arr) => {
                 return {
-                    id: item.dataValues.id,
-                    index: index,
-                    productName: item.dataValues.productName,
-                    productDesc: item.dataValues.productDesc,
-                    productThumbnail: item.dataValues.productThumbnail,
-                    productDispatchTime: item.dataValues.productDispatchTime,
-                    productInventory: item.dataValues.productInventory,
-                    startSale: item.dataValues.startSale,
-                    endSale: item.dataValues.endSale,
-                    status: item.dataValues.status,
-                    eligibleForDiscount: item.dataValues.eligibleForDiscount,
-                    createdAt: item.dataValues.createdAt
+                    product: item.dataValues,
+                    index: index
                 };
             });
 
@@ -74,7 +64,7 @@ export default class productsBase {
             }
         }
 
-        console.log(product);
+        return {msg: 'Success', payload: 0, product: product[0].dataValues};
     }
 
     /**
@@ -128,14 +118,29 @@ export default class productsBase {
      */
     async updateProductById(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
 
+        
+
     }
 
     /**
      * Soft delete a product.
      * @param id
-     * @returns {Promise<void>}
      */
     async deleteProduct(id) {
+
+        if (!id) {
+            return {msg: 'No Id specified..', payload: 1};
+        }
+
+        try {
+            return !!await products.destroy({
+                where: {
+                    id: id
+                }
+            });
+        } catch (e) {
+            return false;
+        }
 
     }
 }

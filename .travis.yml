@@ -3,6 +3,7 @@ node_js:
   - "stable"
 install:
  - npm install -g codecov
+ - npm install
 script:
   - nyc --reporter lcovonly -- -R spec npm test
   - codecov --token=b2def157-0656-48f5-9ff7-ef9dfad470f1

@@ -98,8 +98,51 @@ export default class productsBase {
 
             return {msg: 'Success', payload: 0, insertedId: createdProduct.dataValues.id};
         } catch (e) {
-            console.log(e);
             return {msg: 'An error occurred while trying to create a new product', payload: 1};
+        }
+    }
+
+    /**
+     * Gets a paginated partial view of the products catalog.
+     * @todo Needs further testing to assure that pagination works as intended.
+     * @param page
+     */
+    async getProductsByPagination(page) {
+        try {
+            let count = await products.findAndCountAll().then((data) => {
+                return data.count;
+            });
+
+            const limit = 50;
+
+            let pages = Math.ceil(count / limit);
+            let offset = limit * (page - 1);
+
+            let resultObjects = await products.findAll({
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit: limit,
+                offset: offset
+            });
+
+            if (resultObjects.length <= 0) {
+                return {msg: 'There was no products found...', payload: 1};
+            }
+
+            let outputProducts = resultObjects.map((item, index) => {
+                return item.dataValues;
+            });
+
+            return {
+                msg: 'Success',
+                payload: 0,
+                pages: pages,
+                count: count,
+                products: outputProducts
+            };
+        } catch (e) {
+            return {msg: 'An error occurred while trying get a set of paginated products..', payload: 1};
         }
     }
 
@@ -117,8 +160,32 @@ export default class productsBase {
      * @param endSaleDate
      */
     async updateProductById(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
+        try {
+            let updatedProduct = await !!products.update({
+                    productName: name,
+                    productDesc: description,
+                    productThumbnail: thumbnail,
+                    productDispatchTime: dispatchTime,
+                    status: status,
+                    eligibleForDiscount: eligibleForDiscount,
+                    productInventory: productInventory,
+                    startSale: startSaleDate,
+                    endSale: endSaleDate
+                },
+                {
+                    where: {
+                        id: id
+                    }
+                });
 
+            if (!updatedProduct) {
+                return {msg: 'The product was not able to be updated.', payload: 1};
+            }
 
+            return {msg: 'Success', payload: 0};
+        } catch (e) {
+            return {msg: 'An error occurred while updating the product information.', payload: 1};
+        }
 
     }
 

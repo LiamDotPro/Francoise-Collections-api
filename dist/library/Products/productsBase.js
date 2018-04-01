@@ -198,11 +198,9 @@ var productsBase = function () {
                             case 7:
                                 _context3.prev = 7;
                                 _context3.t0 = _context3['catch'](0);
-
-                                console.log(_context3.t0);
                                 return _context3.abrupt('return', { msg: 'An error occurred while trying to create a new product', payload: 1 });
 
-                            case 11:
+                            case 10:
                             case 'end':
                                 return _context3.stop();
                         }
@@ -215,6 +213,81 @@ var productsBase = function () {
             }
 
             return createProduct;
+        }()
+
+        /**
+         * Gets a paginated partial view of the products catalog.
+         * @todo Needs further testing to assure that pagination works as intended.
+         * @param page
+         */
+
+    }, {
+        key: 'getProductsByPagination',
+        value: function () {
+            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(page) {
+                var count, limit, pages, offset, resultObjects, outputProducts;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                _context4.prev = 0;
+                                _context4.next = 3;
+                                return products.findAndCountAll().then(function (data) {
+                                    return data.count;
+                                });
+
+                            case 3:
+                                count = _context4.sent;
+                                limit = 50;
+                                pages = Math.ceil(count / limit);
+                                offset = limit * (page - 1);
+                                _context4.next = 9;
+                                return products.findAll({
+                                    order: [['id', 'DESC']],
+                                    limit: limit,
+                                    offset: offset
+                                });
+
+                            case 9:
+                                resultObjects = _context4.sent;
+
+                                if (!(resultObjects.length <= 0)) {
+                                    _context4.next = 12;
+                                    break;
+                                }
+
+                                return _context4.abrupt('return', { msg: 'There was no products found...', payload: 1 });
+
+                            case 12:
+                                outputProducts = resultObjects.map(function (item, index) {
+                                    return item.dataValues;
+                                });
+                                return _context4.abrupt('return', {
+                                    msg: 'Success',
+                                    payload: 0,
+                                    pages: pages,
+                                    count: count,
+                                    products: outputProducts
+                                });
+
+                            case 16:
+                                _context4.prev = 16;
+                                _context4.t0 = _context4['catch'](0);
+                                return _context4.abrupt('return', { msg: 'An error occurred while trying get a set of paginated products..', payload: 1 });
+
+                            case 19:
+                            case 'end':
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this, [[0, 16]]);
+            }));
+
+            function getProductsByPagination(_x11) {
+                return _ref4.apply(this, arguments);
+            }
+
+            return getProductsByPagination;
         }()
 
         /**
@@ -234,20 +307,58 @@ var productsBase = function () {
     }, {
         key: 'updateProductById',
         value: function () {
-            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+            var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
+                var updatedProduct;
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
                     while (1) {
-                        switch (_context4.prev = _context4.next) {
+                        switch (_context5.prev = _context5.next) {
                             case 0:
+                                _context5.prev = 0;
+                                _context5.next = 3;
+                                return !!products.update({
+                                    productName: name,
+                                    productDesc: description,
+                                    productThumbnail: thumbnail,
+                                    productDispatchTime: dispatchTime,
+                                    status: status,
+                                    eligibleForDiscount: eligibleForDiscount,
+                                    productInventory: productInventory,
+                                    startSale: startSaleDate,
+                                    endSale: endSaleDate
+                                }, {
+                                    where: {
+                                        id: id
+                                    }
+                                });
+
+                            case 3:
+                                updatedProduct = _context5.sent;
+
+                                if (updatedProduct) {
+                                    _context5.next = 6;
+                                    break;
+                                }
+
+                                return _context5.abrupt('return', { msg: 'The product was not able to be updated.', payload: 1 });
+
+                            case 6:
+                                return _context5.abrupt('return', { msg: 'Success', payload: 0 });
+
+                            case 9:
+                                _context5.prev = 9;
+                                _context5.t0 = _context5['catch'](0);
+                                return _context5.abrupt('return', { msg: 'An error occurred while updating the product information.', payload: 1 });
+
+                            case 12:
                             case 'end':
-                                return _context4.stop();
+                                return _context5.stop();
                         }
                     }
-                }, _callee4, this);
+                }, _callee5, this, [[0, 9]]);
             }));
 
-            function updateProductById(_x11, _x12, _x13, _x14, _x15, _x16, _x17, _x18, _x19, _x20) {
-                return _ref4.apply(this, arguments);
+            function updateProductById(_x12, _x13, _x14, _x15, _x16, _x17, _x18, _x19, _x20, _x21) {
+                return _ref5.apply(this, arguments);
             }
 
             return updateProductById;
@@ -261,21 +372,21 @@ var productsBase = function () {
     }, {
         key: 'deleteProduct',
         value: function () {
-            var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(id) {
-                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(id) {
+                return regeneratorRuntime.wrap(function _callee6$(_context6) {
                     while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context6.prev = _context6.next) {
                             case 0:
                                 if (id) {
-                                    _context5.next = 2;
+                                    _context6.next = 2;
                                     break;
                                 }
 
-                                return _context5.abrupt('return', { msg: 'No Id specified..', payload: 1 });
+                                return _context6.abrupt('return', { msg: 'No Id specified..', payload: 1 });
 
                             case 2:
-                                _context5.prev = 2;
-                                _context5.next = 5;
+                                _context6.prev = 2;
+                                _context6.next = 5;
                                 return products.destroy({
                                     where: {
                                         id: id
@@ -283,23 +394,23 @@ var productsBase = function () {
                                 });
 
                             case 5:
-                                return _context5.abrupt('return', !!_context5.sent);
+                                return _context6.abrupt('return', !!_context6.sent);
 
                             case 8:
-                                _context5.prev = 8;
-                                _context5.t0 = _context5['catch'](2);
-                                return _context5.abrupt('return', false);
+                                _context6.prev = 8;
+                                _context6.t0 = _context6['catch'](2);
+                                return _context6.abrupt('return', false);
 
                             case 11:
                             case 'end':
-                                return _context5.stop();
+                                return _context6.stop();
                         }
                     }
-                }, _callee5, this, [[2, 8]]);
+                }, _callee6, this, [[2, 8]]);
             }));
 
-            function deleteProduct(_x21) {
-                return _ref5.apply(this, arguments);
+            function deleteProduct(_x22) {
+                return _ref6.apply(this, arguments);
             }
 
             return deleteProduct;

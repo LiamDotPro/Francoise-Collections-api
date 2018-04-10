@@ -114,18 +114,19 @@ var productsBase = function () {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                _context2.next = 2;
+                                _context2.prev = 0;
+                                _context2.next = 3;
                                 return products.findAll({
                                     where: {
                                         id: id
                                     }
                                 });
 
-                            case 2:
+                            case 3:
                                 product = _context2.sent;
 
                                 if (!(product.length <= 0)) {
-                                    _context2.next = 5;
+                                    _context2.next = 6;
                                     break;
                                 }
 
@@ -134,15 +135,20 @@ var productsBase = function () {
                                     payload: 1
                                 });
 
-                            case 5:
+                            case 6:
                                 return _context2.abrupt('return', { msg: 'Success', payload: 0, product: product[0].dataValues });
 
-                            case 6:
+                            case 9:
+                                _context2.prev = 9;
+                                _context2.t0 = _context2['catch'](0);
+                                return _context2.abrupt('return', { msg: 'An error occurred while trying to retrieve a product..', payload: 1 });
+
+                            case 12:
                             case 'end':
                                 return _context2.stop();
                         }
                     }
-                }, _callee2, this);
+                }, _callee2, this, [[0, 9]]);
             }));
 
             function getProductById(_x) {
@@ -382,7 +388,7 @@ var productsBase = function () {
                                     break;
                                 }
 
-                                return _context6.abrupt('return', { msg: 'No Id specified..', payload: 1 });
+                                return _context6.abrupt('return', { msg: 'No id specified..', payload: 1 });
 
                             case 2:
                                 _context6.prev = 2;

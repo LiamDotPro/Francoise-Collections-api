@@ -51,20 +51,24 @@ export default class productsBase {
      * @param id
      */
     async getProductById(id) {
-        let product = await products.findAll({
-            where: {
-                id: id
-            }
-        });
+        try {
+            let product = await products.findAll({
+                where: {
+                    id: id
+                }
+            });
 
-        if (product.length <= 0) {
-            return {
-                msg: 'No product was found..',
-                payload: 1
+            if (product.length <= 0) {
+                return {
+                    msg: 'No product was found..',
+                    payload: 1
+                }
             }
+
+            return {msg: 'Success', payload: 0, product: product[0].dataValues};
+        } catch (e) {
+            return {msg: 'An error occurred while trying to retrieve a product..', payload: 1};
         }
-
-        return {msg: 'Success', payload: 0, product: product[0].dataValues};
     }
 
     /**
@@ -196,7 +200,7 @@ export default class productsBase {
     async deleteProduct(id) {
 
         if (!id) {
-            return {msg: 'No Id specified..', payload: 1};
+            return {msg: 'No id specified..', payload: 1};
         }
 
         try {

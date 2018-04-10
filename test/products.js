@@ -16,6 +16,11 @@ describe('Products', () => {
             return assert.equal(0, result.payload, result.msg);
         });
 
+        it('Should update the previously made product', async () => {
+            let result = await products.updateProductById(createdItemId, 'Test Product Updated', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, 10, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
+            return assert.equal(0, result.payload, result.msg);
+        });
+
         it('Should get all products', async () => {
             let result = await products.getAllProducts();
             return assert.isAbove(result.productList.length, 0, result.msg);
@@ -29,11 +34,6 @@ describe('Products', () => {
         it('Should get products based on pagination', async () => {
             let result = await products.getProductsByPagination(1);
             assert.equal(0, result.payload, result.msg);
-        });
-
-        it('Should update the previously made product', async () => {
-            let result = await products.updateProductById(createdItemId, 'Test Product Updated', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, 10, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
-            return assert.equal(0, result.payload, result.msg);
         });
 
         it('Should validate that the product has had its title updated', async () => {

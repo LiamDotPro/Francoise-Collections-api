@@ -22,10 +22,6 @@ var _redis = require('redis');
 
 var _redis2 = _interopRequireDefault(_redis);
 
-var _fsReadfilePromise = require('fs-readfile-promise');
-
-var _fsReadfilePromise2 = _interopRequireDefault(_fsReadfilePromise);
-
 var _authentication = require('./routers/v1/authentication');
 
 var _authentication2 = _interopRequireDefault(_authentication);
@@ -52,27 +48,34 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // Configure out environment to be available.
 
-// Routers
-
-// express connect reddis
-
-//morgan
-
-// Restify
-require('dotenv').config();
 // Readfile ES6
+// Routers
 
 //Passport
 
 //helmet
+require('dotenv').config();
 
+/**
+ * Redis Store Configuration
+ */
+
+// express connect redis
+
+//morgan
+
+// Restify
+var redisHost = '';
+process.env.ENVIROMENT === 'development' ? redisHost = '109.237.26.131' : 'localhost';
 
 var session = require('express-session');
 var redisStore = require('connect-redis')(session);
 var client = _redis2.default.createClient({ host: '109.237.26.131', port: 6379 });
 
+/**
+ * Port Configuration
+ */
 var port = 3000;
-
 process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
 
 var server = _restify2.default.createServer({

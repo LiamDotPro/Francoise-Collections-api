@@ -7,10 +7,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 //Passport
 import passport from './library/Passport/Passport';
-// express connect reddis
+// express connect redis
 import redis from 'redis';
 // Readfile ES6
-import fsRead from 'fs-readfile-promise';
 // Routers
 import AuthRouter from './routers/v1/authentication';
 import PayRouter from './routers/v1/payments';
@@ -21,13 +20,22 @@ import {setup} from './socketio/io';
 // Configure out environment to be available.
 require('dotenv').config();
 
+/**
+ * Redis Store Configuration
+ */
+let redisHost = '';
+process.env.ENVIROMENT === 'development' ? redisHost = '109.237.26.131' : 'localhost';
+
 let session = require('express-session');
 let redisStore = require('connect-redis')(session);
 let client = redis.createClient({host: '109.237.26.131', port: 6379});
 
+/**
+ * Port Configuration
+ */
 let port = 3000;
-
 process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
+
 
 let server = restify.createServer({
     name: 'Main Http Server',
@@ -137,7 +145,7 @@ server.get(
     /\/(.*)?.*/,
     restify.plugins.serveStatic({
         directory: __dirname + '/public',
-        default:  '/index.html'
+        default: '/index.html'
     })
 );
 

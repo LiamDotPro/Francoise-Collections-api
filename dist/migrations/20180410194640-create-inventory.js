@@ -2,7 +2,7 @@
 
 module.exports = {
     up: function up(queryInterface, Sequelize) {
-        return queryInterface.createTable('Inventories', {
+        return queryInterface.createTable('inventories', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -41,7 +41,7 @@ module.exports = {
         });
     },
     down: function down(queryInterface, Sequelize) {
-        return queryInterface.dropTable('Inventories');
+        return queryInterface.dropTable('inventories');
     }
 };
 //# sourceMappingURL=20180410194640-create-inventory.js.map

@@ -11,13 +11,13 @@ describe('Products', () => {
         let createdItemId = null;
 
         it('Should create a new product', async () => {
-            let result = await products.createProduct('Test Product', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, 10, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
+            let result = await products.createProduct('Test Product', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
             createdItemId = result.insertedId;
             return assert.equal(0, result.payload, result.msg);
         });
 
         it('Should update the previously made product', async () => {
-            let result = await products.updateProductById(createdItemId, 'Test Product Updated', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, 10, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
+            let result = await products.updateProductById(createdItemId, 'Test Product Updated', 'This is a test item', 'thumbnail.png', 'Dispatches in 2-4 days', 0, false, new Date("2018-03-31 02:00:07.525+01"), new Date("2018-03-31 02:00:07.525+01"));
             return assert.equal(0, result.payload, result.msg);
         });
 

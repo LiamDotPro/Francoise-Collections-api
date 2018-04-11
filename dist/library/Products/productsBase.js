@@ -12,6 +12,10 @@ var _index = require('../../models/index');
 
 var _index2 = _interopRequireDefault(_index);
 
+var _InventoriesBase = require('../Inventories/InventoriesBase');
+
+var _InventoriesBase2 = _interopRequireDefault(_InventoriesBase);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -23,6 +27,7 @@ require('dotenv').config();
 
 // Products model
 var products = _index2.default.product;
+var inventories = new _InventoriesBase2.default();
 
 var productsBase = function () {
     function productsBase() {
@@ -161,7 +166,7 @@ var productsBase = function () {
         /**
          * Creates a new instance of product.
          *
-         * status: 0 draft, 1 live
+         * Also creates an instance of inventory.
          *
          * @param name
          * @param description
@@ -169,7 +174,6 @@ var productsBase = function () {
          * @param dispatchTime
          * @param status
          * @param eligibleForDiscount
-         * @param productInventory
          * @param startSaleDate
          * @param endSaleDate
          */
@@ -177,8 +181,8 @@ var productsBase = function () {
     }, {
         key: 'createProduct',
         value: function () {
-            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
-                var createdProduct;
+            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(name, description, thumbnail, dispatchTime, status, eligibleForDiscount, startSaleDate, endSaleDate) {
+                var createdProduct, resultInventory;
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
@@ -192,29 +196,33 @@ var productsBase = function () {
                                     productDispatchTime: dispatchTime,
                                     status: status,
                                     eligibleForDiscount: eligibleForDiscount,
-                                    productInventory: productInventory,
                                     startSale: startSaleDate,
                                     endSale: endSaleDate
                                 });
 
                             case 3:
                                 createdProduct = _context3.sent;
+                                _context3.next = 6;
+                                return inventories.createNewInventory(createdProduct.dataValues.id, 0, 0, 0, 0);
+
+                            case 6:
+                                resultInventory = _context3.sent;
                                 return _context3.abrupt('return', { msg: 'Success', payload: 0, insertedId: createdProduct.dataValues.id });
 
-                            case 7:
-                                _context3.prev = 7;
+                            case 10:
+                                _context3.prev = 10;
                                 _context3.t0 = _context3['catch'](0);
                                 return _context3.abrupt('return', { msg: 'An error occurred while trying to create a new product', payload: 1 });
 
-                            case 10:
+                            case 13:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this, [[0, 7]]);
+                }, _callee3, this, [[0, 10]]);
             }));
 
-            function createProduct(_x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10) {
+            function createProduct(_x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {
                 return _ref3.apply(this, arguments);
             }
 
@@ -289,7 +297,7 @@ var productsBase = function () {
                 }, _callee4, this, [[0, 16]]);
             }));
 
-            function getProductsByPagination(_x11) {
+            function getProductsByPagination(_x10) {
                 return _ref4.apply(this, arguments);
             }
 
@@ -305,7 +313,6 @@ var productsBase = function () {
          * @param dispatchTime
          * @param status
          * @param eligibleForDiscount
-         * @param productInventory
          * @param startSaleDate
          * @param endSaleDate
          */
@@ -313,7 +320,7 @@ var productsBase = function () {
     }, {
         key: 'updateProductById',
         value: function () {
-            var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
+            var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, startSaleDate, endSaleDate) {
                 var updatedProduct;
                 return regeneratorRuntime.wrap(function _callee5$(_context5) {
                     while (1) {
@@ -328,7 +335,6 @@ var productsBase = function () {
                                     productDispatchTime: dispatchTime,
                                     status: status,
                                     eligibleForDiscount: eligibleForDiscount,
-                                    productInventory: productInventory,
                                     startSale: startSaleDate,
                                     endSale: endSaleDate
                                 }, {
@@ -363,7 +369,7 @@ var productsBase = function () {
                 }, _callee5, this, [[0, 9]]);
             }));
 
-            function updateProductById(_x12, _x13, _x14, _x15, _x16, _x17, _x18, _x19, _x20, _x21) {
+            function updateProductById(_x11, _x12, _x13, _x14, _x15, _x16, _x17, _x18, _x19) {
                 return _ref5.apply(this, arguments);
             }
 
@@ -379,6 +385,7 @@ var productsBase = function () {
         key: 'deleteProduct',
         value: function () {
             var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(id) {
+                var productDestroyResult, inventoryDestory;
                 return regeneratorRuntime.wrap(function _callee6$(_context6) {
                     while (1) {
                         switch (_context6.prev = _context6.next) {
@@ -400,26 +407,76 @@ var productsBase = function () {
                                 });
 
                             case 5:
-                                return _context6.abrupt('return', !!_context6.sent);
+                                productDestroyResult = !!_context6.sent;
+
+                                if (productDestroyResult) {
+                                    _context6.next = 8;
+                                    break;
+                                }
+
+                                return _context6.abrupt('return', { msg: 'Product could not be deleted', payload: 1 });
 
                             case 8:
-                                _context6.prev = 8;
+                                _context6.next = 10;
+                                return inventories.deleteInventoryByProductId(id);
+
+                            case 10:
+                                inventoryDestory = _context6.sent;
+
+                                if (inventoryDestory) {
+                                    _context6.next = 13;
+                                    break;
+                                }
+
+                                return _context6.abrupt('return', { msg: 'Inventory could not be deleted..', payload: 1 });
+
+                            case 13:
+                                return _context6.abrupt('return', true);
+
+                            case 16:
+                                _context6.prev = 16;
                                 _context6.t0 = _context6['catch'](2);
                                 return _context6.abrupt('return', false);
 
-                            case 11:
+                            case 19:
                             case 'end':
                                 return _context6.stop();
                         }
                     }
-                }, _callee6, this, [[2, 8]]);
+                }, _callee6, this, [[2, 16]]);
             }));
 
-            function deleteProduct(_x22) {
+            function deleteProduct(_x20) {
                 return _ref6.apply(this, arguments);
             }
 
             return deleteProduct;
+        }()
+
+        /**
+         * Gets Products including a join to inventory
+         */
+
+    }, {
+        key: 'getProductsWithInventoryAttached',
+        value: function () {
+            var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+                return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                    while (1) {
+                        switch (_context7.prev = _context7.next) {
+                            case 0:
+                            case 'end':
+                                return _context7.stop();
+                        }
+                    }
+                }, _callee7, this);
+            }));
+
+            function getProductsWithInventoryAttached() {
+                return _ref7.apply(this, arguments);
+            }
+
+            return getProductsWithInventoryAttached;
         }()
     }]);
 

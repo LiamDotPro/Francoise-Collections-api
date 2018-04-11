@@ -6,7 +6,6 @@ module.exports = function (sequelize, DataTypes) {
         productDesc: DataTypes.STRING,
         productThumbnail: DataTypes.STRING,
         productDispatchTime: DataTypes.STRING,
-        productInventory: DataTypes.INTEGER,
         startSale: DataTypes.DATEONLY,
         endSale: DataTypes.DATEONLY,
         status: DataTypes.INTEGER,

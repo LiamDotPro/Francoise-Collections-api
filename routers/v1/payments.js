@@ -2,8 +2,9 @@
 require('dotenv').config();
 
 import fs from 'fs';
+import express from 'express';
 
-import {Router} from 'restify-router';
+let router = express.Router();
 
 /**
  * Path imports
@@ -11,8 +12,6 @@ import {Router} from 'restify-router';
 // Stripe Payment Integration
 const keyPublishable = process.env.PUBLISHABLE_KEY;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
-const router = new Router();
 
 /**
  * Routes

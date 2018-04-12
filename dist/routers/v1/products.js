@@ -13,22 +13,32 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var router = _express2.default.Router();
 
 /**
- * Path imports
- */
-
-/**
  * Routes
  */
 
-router.get('/', function (req, res, next) {
+/**
+ * Create a new product.
+ */
+router.post('/createProduct', function (req, res, next) {
   res.send({});
   next();
 });
 
-router.post('/', function (req, res, next) {
+/**
+ * Get products with pagination.
+ */
+router.get('/products', function (req, res, next) {
+  res.send({});
+  next();
+});
+
+/**
+ * Get all products without pagination.
+ */
+router.get('/allProducts', function (req, res, next) {
   res.send({});
   next();
 });
 
 exports.default = router;
-//# sourceMappingURL=catalog.js.map
+//# sourceMappingURL=products.js.map

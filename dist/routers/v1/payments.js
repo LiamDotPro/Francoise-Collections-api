@@ -8,12 +8,16 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _restifyRouter = require('restify-router');
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Configure out environment to be available.
 require('dotenv').config();
+
+var router = _express2.default.Router();
 
 /**
  * Path imports
@@ -21,8 +25,6 @@ require('dotenv').config();
 // Stripe Payment Integration
 var keyPublishable = process.env.PUBLISHABLE_KEY;
 var stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
-var router = new _restifyRouter.Router();
 
 /**
  * Routes

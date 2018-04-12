@@ -101,10 +101,11 @@ var ConfiguredPassport = function () {
 
 exports.default = ConfiguredPassport;
 function requireAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
+    console.log(req.isAuthenticated());
+    if (!req.isAuthenticated()) {
+        res.redirect(200, '/');
     }
 
-    res.redirect('/', next);
+    return next();
 }
 //# sourceMappingURL=Passport.js.map

@@ -478,6 +478,48 @@ var productsBase = function () {
 
             return getProductsWithInventoryAttached;
         }()
+    }, {
+        key: 'uploadProductThumbnail',
+        value: function () {
+            var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+                return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                    while (1) {
+                        switch (_context8.prev = _context8.next) {
+                            case 0:
+                            case 'end':
+                                return _context8.stop();
+                        }
+                    }
+                }, _callee8, this);
+            }));
+
+            function uploadProductThumbnail() {
+                return _ref8.apply(this, arguments);
+            }
+
+            return uploadProductThumbnail;
+        }()
+    }, {
+        key: 'uploadProductImages',
+        value: function () {
+            var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
+                return regeneratorRuntime.wrap(function _callee9$(_context9) {
+                    while (1) {
+                        switch (_context9.prev = _context9.next) {
+                            case 0:
+                            case 'end':
+                                return _context9.stop();
+                        }
+                    }
+                }, _callee9, this);
+            }));
+
+            function uploadProductImages() {
+                return _ref9.apply(this, arguments);
+            }
+
+            return uploadProductImages;
+        }()
     }]);
 
     return productsBase;

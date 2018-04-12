@@ -222,9 +222,7 @@ export default class productsBase {
             if (!inventoryDestory) {
                 return {msg: 'Inventory could not be deleted..', payload: 1};
             }
-
             return true;
-
         } catch (e) {
             return false;
         }
@@ -235,6 +233,14 @@ export default class productsBase {
      * Gets Products including a join to inventory
      */
     async getProductsWithInventoryAttached() {
+
+    }
+
+    async uploadProductThumbnail() {
+
+    }
+
+    async uploadProductImages() {
 
     }
 

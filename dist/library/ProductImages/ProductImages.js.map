@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../library/ProductImages/ProductImages.js"],"names":["ProductImages"],"mappings":";;;;;;;;;;IAEqBA,a;;;;;;;6CAEI,CAEpB;;;8CAEqB,CAErB;;;;;;kBARgBA,a","file":"ProductImages.js","sourcesContent":["\r\n\r\nexport default class ProductImages {\r\n\r\n    insertProductImage() {\r\n\r\n    }\r\n\r\n    insertProductImages() {\r\n\r\n    }\r\n\r\n}"]}

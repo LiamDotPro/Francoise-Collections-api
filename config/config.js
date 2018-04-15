@@ -2,8 +2,8 @@ const Sequelize = require("sequelize");
 
 module.exports = {
     development: {
-        username: "zeus",
-        password: "test123",
+        username: "postgres",
+        password: "!`5L:~5SCk!x3rgg",
         database: "database_development",
         host: "109.237.26.131",
         dialect: "postgres",
@@ -11,8 +11,8 @@ module.exports = {
         logging: false
     },
     test: {
-        username: "zeus",
-        password: "test123",
+        username: "postgres",
+        password: "!`5L:~5SCk!x3rgg",
         database: "database_test",
         host: "109.237.26.131",
         logging: false,
@@ -20,8 +20,8 @@ module.exports = {
         dialect: "postgres"
     },
     production: {
-        username: "zeus",
-        password: "test123",
+        username: "postgres",
+        password: "!`5L:~5SCk!x3rgg",
         database: "database_production",
         host: "109.237.26.131",
         logging: false,

@@ -38,16 +38,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // start app
 
-//cors
-
-// express connect redis
-
-//morgan
-
-// express
-var app = (0, _express2.default)();
-// Configure out environment to be available.
-
 // socketio
 
 // body parser
@@ -55,6 +45,16 @@ var app = (0, _express2.default)();
 //Passport
 
 //helmet
+var app = (0, _express2.default)();
+// Configure out environment to be available.
+
+//cors
+
+// express connect redis
+
+//morgan
+
+// express
 require('dotenv').config();
 
 /**
@@ -65,15 +65,15 @@ process.env.ENVIROMENT === 'development' ? redisHost = '109.237.26.131' : 'local
 
 var session = require('express-session');
 var redisStore = require('connect-redis')(session);
-var client = _redis2.default.createClient({ host: '109.237.26.131', port: 6379 });
+var client = _redis2.default.createClient({ host: 'localhost', port: 6379 });
 
-/**
+/**\
  * Reddis Sessions
  */
 app.use(session({
   secret: 'ssshhhhh',
   // create new redis store.
-  store: new redisStore({ host: '109.237.26.131', port: 6379, client: client, ttl: 260 }),
+  store: new redisStore({ host: 'localhost', port: 6379, client: client, ttl: 260 }),
   saveUninitialized: false,
   resave: true
 }));

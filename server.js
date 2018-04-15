@@ -15,6 +15,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 // socketio
 import {setup} from './socketio/io';
+import {loadRouters} from './routers/RouterLoader';
 // start app
 const app = express();
 // Configure out environment to be available.
@@ -28,24 +29,24 @@ process.env.ENVIROMENT === 'development' ? redisHost = '109.237.26.131' : 'local
 
 let session = require('express-session');
 let redisStore = require('connect-redis')(session);
-let client = redis.createClient({host: '109.237.26.131', port: 6379});
+let client = redis.createClient({host: 'localhost', port: 6379});
 
-/**
+/**\
  * Reddis Sessions
  */
 app.use(session({
     secret: 'ssshhhhh',
     // create new redis store.
-    store: new redisStore({host: '109.237.26.131', port: 6379, client: client, ttl: 260}),
+    store: new redisStore({host: 'localhost', port: 6379, client: client, ttl: 260}),
     saveUninitialized: false,
     resave: true
 }));
 
-client.on('connect', function () {
+client.on('connect', () => {
     console.log('Connected to Redis');
 });
 
-client.on('error', function (err) {
+client.on('error', (err) => {
     console.log('Redis error: ' + err);
 });
 
@@ -91,8 +92,6 @@ configuredPassport.configurePassport();
 
 app.use(configuredPassport.passport.initialize());
 app.use(configuredPassport.passport.session());
-
-import {loadRouters} from './routers/RouterLoader';
 
 // Load routers
 loadRouters(app);

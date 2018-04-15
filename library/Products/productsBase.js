@@ -2,8 +2,10 @@ require('dotenv').config();
 import 'babel-polyfill';
 // Database Class.
 import db from '../../models/index';
+import Inventories from '../Inventories/InventoriesBase';
 // Products model
 const products = db.product;
+const inventories = new Inventories();
 
 export default class productsBase {
     constructor() {
@@ -51,26 +53,30 @@ export default class productsBase {
      * @param id
      */
     async getProductById(id) {
-        let product = await products.findAll({
-            where: {
-                id: id
-            }
-        });
+        try {
+            let product = await products.findAll({
+                where: {
+                    id: id
+                }
+            });
 
-        if (product.length <= 0) {
-            return {
-                msg: 'No product was found..',
-                payload: 1
+            if (product.length <= 0) {
+                return {
+                    msg: 'No product was found..',
+                    payload: 1
+                }
             }
+
+            return {msg: 'Success', payload: 0, product: product[0].dataValues};
+        } catch (e) {
+            return {msg: 'An error occurred while trying to retrieve a product..', payload: 1};
         }
-
-        return {msg: 'Success', payload: 0, product: product[0].dataValues};
     }
 
     /**
      * Creates a new instance of product.
      *
-     * status: 0 draft, 1 live
+     * Also creates an instance of inventory.
      *
      * @param name
      * @param description
@@ -78,11 +84,11 @@ export default class productsBase {
      * @param dispatchTime
      * @param status
      * @param eligibleForDiscount
-     * @param productInventory
      * @param startSaleDate
      * @param endSaleDate
      */
-    async createProduct(name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
+    async createProduct(name, description, thumbnail, dispatchTime, status, eligibleForDiscount, startSaleDate, endSaleDate) {
+
         try {
             let createdProduct = await products.create({
                 productName: name,
@@ -91,12 +97,19 @@ export default class productsBase {
                 productDispatchTime: dispatchTime,
                 status: status,
                 eligibleForDiscount: eligibleForDiscount,
-                productInventory: productInventory,
                 startSale: startSaleDate,
                 endSale: endSaleDate
             });
 
-            return {msg: 'Success', payload: 0, insertedId: createdProduct.dataValues.id};
+            // Create an inventory using the product identifier.
+            let resultInventory = await inventories.createNewInventory(createdProduct.dataValues.id, 0, 0, 0, 0);
+
+            return {
+                msg: 'Success',
+                payload: 0,
+                insertedId: createdProduct.dataValues.id,
+                resultInventory: resultInventory.insertedId
+            };
         } catch (e) {
             return {msg: 'An error occurred while trying to create a new product', payload: 1};
         }
@@ -155,11 +168,10 @@ export default class productsBase {
      * @param dispatchTime
      * @param status
      * @param eligibleForDiscount
-     * @param productInventory
      * @param startSaleDate
      * @param endSaleDate
      */
-    async updateProductById(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, productInventory, startSaleDate, endSaleDate) {
+    async updateProductById(id, name, description, thumbnail, dispatchTime, status, eligibleForDiscount, startSaleDate, endSaleDate) {
         try {
             let updatedProduct = await !!products.update({
                     productName: name,
@@ -168,7 +180,6 @@ export default class productsBase {
                     productDispatchTime: dispatchTime,
                     status: status,
                     eligibleForDiscount: eligibleForDiscount,
-                    productInventory: productInventory,
                     startSale: startSaleDate,
                     endSale: endSaleDate
                 },
@@ -196,18 +207,46 @@ export default class productsBase {
     async deleteProduct(id) {
 
         if (!id) {
-            return {msg: 'No Id specified..', payload: 1};
+            return {msg: 'No id specified..', payload: 1};
         }
 
         try {
-            return !!await products.destroy({
+
+            let productDestroyResult = !!await products.destroy({
                 where: {
                     id: id
                 }
             });
+
+            if (!productDestroyResult) {
+                return {msg: 'Product could not be deleted', payload: 1};
+            }
+
+            let inventoryDestory = await inventories.deleteInventoryByProductId(id);
+
+            if (!inventoryDestory) {
+                return {msg: 'Inventory could not be deleted..', payload: 1};
+            }
+            return true;
         } catch (e) {
             return false;
         }
 
     }
+
+    /**
+     * Gets Products including a join to inventory
+     */
+    async getProductsWithInventoryAttached() {
+
+    }
+
+    async uploadProductThumbnail() {
+
+    }
+
+    async uploadProductImages() {
+
+    }
+
 }

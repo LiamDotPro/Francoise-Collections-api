@@ -1,14 +1,9 @@
-import 'babel-polyfill';
-import {Router} from 'restify-router';
+import express from 'express';
 
-/**
- * Path imports
- */
-const router = new Router();
+let router = express.Router();
 
 /**
  * Routes
  */
-
 
 export default router;

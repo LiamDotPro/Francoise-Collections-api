@@ -1,81 +1,87 @@
 import 'babel-polyfill';
-// Restify
-import restify from 'restify';
+// express
+import express from 'express';
 //helmet
 import helmet from 'helmet';
 //morgan
 import morgan from 'morgan';
 //Passport
 import passport from './library/Passport/Passport';
-// express connect reddis
+// express connect redis
 import redis from 'redis';
-// Readfile ES6
-import fsRead from 'fs-readfile-promise';
-// Routers
-import AuthRouter from './routers/v1/authentication';
-import PayRouter from './routers/v1/payments';
-import CatalogRouter from './routers/v1/catalog';
-import AccountRouter from './routers/v1/accounts';
-import CartRouter from './routers/v1/cart';
+// body parser
+import bodyParser from 'body-parser';
+//cors
+import cors from 'cors';
+// socketio
 import {setup} from './socketio/io';
+import {loadRouters} from './routers/RouterLoader';
+// start app
+const app = express();
 // Configure out environment to be available.
 require('dotenv').config();
 
+/**
+ * Redis Store Configuration
+ */
+let redisHost = '';
+process.env.ENVIROMENT === 'development' ? redisHost = '109.237.26.131' : 'localhost';
+
 let session = require('express-session');
 let redisStore = require('connect-redis')(session);
-let client = redis.createClient({host: '109.237.26.131', port: 6379});
+let client = redis.createClient({host: 'localhost', port: 6379});
 
-let port = 3000;
+/**\
+ * Reddis Sessions
+ */
+app.use(session({
+    secret: 'ssshhhhh',
+    // create new redis store.
+    store: new redisStore({host: 'localhost', port: 6379, client: client, ttl: 260}),
+    saveUninitialized: false,
+    resave: true
+}));
 
-process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
-
-let server = restify.createServer({
-    name: 'Main Http Server',
-    strictRouting: true,
-    formatters: {
-        'text/html': function (req, res, body, cb) {
-            cb(null, body)
-        }
-    }
+client.on('connect', () => {
+    console.log('Connected to Redis');
 });
 
-// Setup the socketio api module
-setup(server);
+client.on('error', (err) => {
+    console.log('Redis error: ' + err);
+});
 
 /**
- * Uses restify v5 plugins to handle parsing of body and queries by default.
+ * Port Configuration
  */
-server.use(restify.plugins.bodyParser());
-server.use(restify.plugins.queryParser());
+let port = 3000;
+process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
+
+
+// Setup the socketio api module
+setup(app);
 
 /**
  * Integrate helmet for mitigation of various attacks.
  */
-server.use(helmet());
+app.use(helmet());
 
 /**
  * Integrate morgan for developer friendly logs of http requests.
  */
-server.use(morgan('dev'));
+app.use(morgan('dev'));
 
 /**
- * Reddis Sessions
+ * CORS
  */
-server.use(session({
-    secret: 'ssshhhhh',
-    // create new redis store.
-    store: new redisStore({host: '109.237.26.131', port: 6379, client: client, ttl: 260}),
-    saveUninitialized: false,
-    resave: false
+app.use(cors());
+
+/**
+ * body parser
+ */
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
 }));
-
-client.on('connect', function () {
-    console.log('Connected to Redis');
-});
-
-client.on('error', function (err) {
-    console.log('Redis error: ' + err);
-});
 
 /**
  * Passport JWT
@@ -83,64 +89,13 @@ client.on('error', function (err) {
 let configuredPassport = new passport();
 // Only configure the passport once.
 configuredPassport.configurePassport();
-server.use(configuredPassport.passport.initialize());
-server.use(configuredPassport.passport.session());
 
-/**
- * Handle Cross Origin Requests.
- */
-server.use(
-    function crossOrigin(req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "X-Requested-With");
-        return next();
-    }
-);
+app.use(configuredPassport.passport.initialize());
+app.use(configuredPassport.passport.session());
 
-/**
- * Authentication Routing
- */
-AuthRouter.applyRoutes(server, '/v1/auth');
+// Load routers
+loadRouters(app);
 
-/**
- * Payments Routing
- */
-PayRouter.applyRoutes(server, '/v1/pay');
-
-/**
- * Catalog Routing
- */
-CatalogRouter.applyRoutes(server, '/v1/catalog');
-
-/**
- * Accounts Routing
- */
-AccountRouter.applyRoutes(server, '/v1/accounts');
-
-/**
- * Cart Routing
- */
-CartRouter.applyRoutes(server, '/v1/cart');
-
-/**
- * Handles debugging.
- */
-server.use((req, res, next) => {
-    console.log(req.method + ' ' + req.url);
-    return next();
-});
-
-/**
- * Handle the serving of static files that live within public.
- */
-server.get(
-    /\/(.*)?.*/,
-    restify.plugins.serveStatic({
-        directory: __dirname + '/public',
-        default:  '/index.html'
-    })
-);
-
-server.listen(port, function () {
+app.listen(port, () => {
     console.log('Http Server listening on ', port);
 });

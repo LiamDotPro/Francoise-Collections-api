@@ -31,7 +31,6 @@ export default class ConfiguredPassport {
                 if (authResult.payload !== 11) {
                     return done(null, false, {message: "Incorrect email or password supplied"});
                 }
-
                 return done(null, authResult.user.id);
             } catch (e) {
                 return done(null, false, {message: "An error occurred while trying to login.."});
@@ -44,9 +43,10 @@ export default class ConfiguredPassport {
 }
 
 export function requireAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
+    console.log(req.isAuthenticated());
+    if (!req.isAuthenticated()) {
+        res.redirect(200, '/');
     }
 
-    res.redirect('/', next);
+    return next();
 }

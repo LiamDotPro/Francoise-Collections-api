@@ -1,11 +1,6 @@
-import {Router} from 'restify-router';
+import express from 'express';
 
-const router = new Router();
-
-
-/**
- * Path imports
- */
+let router = express.Router();
 
 /**
  * Routes

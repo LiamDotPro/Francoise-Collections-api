@@ -1,29 +1,29 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
-var _restifyRouter = require('restify-router');
+var _express = require('express');
 
-var router = new _restifyRouter.Router();
+var _express2 = _interopRequireDefault(_express);
 
-/**
- * Path imports
- */
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var router = _express2.default.Router();
 
 /**
  * Routes
  */
 
 router.get('/', function (req, res, next) {
-  res.send({});
-  next();
+    res.send({});
+    next();
 });
 
 router.post('/', function (req, res, next) {
-  res.send({});
-  next();
+    res.send({});
+    next();
 });
 
 exports.default = router;

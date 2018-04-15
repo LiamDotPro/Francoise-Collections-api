@@ -2,9 +2,9 @@
 
 require('babel-polyfill');
 
-var _restify = require('restify');
+var _express = require('express');
 
-var _restify2 = _interopRequireDefault(_restify);
+var _express2 = _interopRequireDefault(_express);
 
 var _helmet = require('helmet');
 
@@ -22,97 +22,60 @@ var _redis = require('redis');
 
 var _redis2 = _interopRequireDefault(_redis);
 
-var _fsReadfilePromise = require('fs-readfile-promise');
+var _bodyParser = require('body-parser');
 
-var _fsReadfilePromise2 = _interopRequireDefault(_fsReadfilePromise);
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _authentication = require('./routers/v1/authentication');
+var _cors = require('cors');
 
-var _authentication2 = _interopRequireDefault(_authentication);
-
-var _payments = require('./routers/v1/payments');
-
-var _payments2 = _interopRequireDefault(_payments);
-
-var _catalog = require('./routers/v1/catalog');
-
-var _catalog2 = _interopRequireDefault(_catalog);
-
-var _accounts = require('./routers/v1/accounts');
-
-var _accounts2 = _interopRequireDefault(_accounts);
-
-var _cart = require('./routers/v1/cart');
-
-var _cart2 = _interopRequireDefault(_cart);
+var _cors2 = _interopRequireDefault(_cors);
 
 var _io = require('./socketio/io');
 
+var _RouterLoader = require('./routers/RouterLoader');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Configure out environment to be available.
+// start app
 
-// Routers
+// socketio
 
-// express connect reddis
-
-//morgan
-
-// Restify
-require('dotenv').config();
-// Readfile ES6
+// body parser
 
 //Passport
 
 //helmet
+var app = (0, _express2.default)();
+// Configure out environment to be available.
 
+//cors
+
+// express connect redis
+
+//morgan
+
+// express
+require('dotenv').config();
+
+/**
+ * Redis Store Configuration
+ */
+var redisHost = '';
+process.env.ENVIROMENT === 'development' ? redisHost = '109.237.26.131' : 'localhost';
 
 var session = require('express-session');
 var redisStore = require('connect-redis')(session);
-var client = _redis2.default.createClient({ host: '109.237.26.131', port: 6379 });
+var client = _redis2.default.createClient({ host: 'localhost', port: 6379 });
 
-var port = 3000;
-
-process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
-
-var server = _restify2.default.createServer({
-  name: 'Main Http Server',
-  strictRouting: true,
-  formatters: {
-    'text/html': function textHtml(req, res, body, cb) {
-      cb(null, body);
-    }
-  }
-});
-
-// Setup the socketio api module
-(0, _io.setup)(server);
-
-/**
- * Uses restify v5 plugins to handle parsing of body and queries by default.
- */
-server.use(_restify2.default.plugins.bodyParser());
-server.use(_restify2.default.plugins.queryParser());
-
-/**
- * Integrate helmet for mitigation of various attacks.
- */
-server.use((0, _helmet2.default)());
-
-/**
- * Integrate morgan for developer friendly logs of http requests.
- */
-server.use((0, _morgan2.default)('dev'));
-
-/**
+/**\
  * Reddis Sessions
  */
-server.use(session({
+app.use(session({
   secret: 'ssshhhhh',
   // create new redis store.
-  store: new redisStore({ host: '109.237.26.131', port: 6379, client: client, ttl: 260 }),
+  store: new redisStore({ host: 'localhost', port: 6379, client: client, ttl: 260 }),
   saveUninitialized: false,
-  resave: false
+  resave: true
 }));
 
 client.on('connect', function () {
@@ -124,65 +87,51 @@ client.on('error', function (err) {
 });
 
 /**
+ * Port Configuration
+ */
+var port = 3000;
+process.env.ENVIROMENT === 'development' ? port = 3000 : port = 8080;
+
+// Setup the socketio api module
+(0, _io.setup)(app);
+
+/**
+ * Integrate helmet for mitigation of various attacks.
+ */
+app.use((0, _helmet2.default)());
+
+/**
+ * Integrate morgan for developer friendly logs of http requests.
+ */
+app.use((0, _morgan2.default)('dev'));
+
+/**
+ * CORS
+ */
+app.use((0, _cors2.default)());
+
+/**
+ * body parser
+ */
+app.use(_bodyParser2.default.json());
+app.use(_bodyParser2.default.urlencoded({
+  extended: true
+}));
+
+/**
  * Passport JWT
  */
 var configuredPassport = new _Passport2.default();
 // Only configure the passport once.
 configuredPassport.configurePassport();
-server.use(configuredPassport.passport.initialize());
-server.use(configuredPassport.passport.session());
 
-/**
- * Handle Cross Origin Requests.
- */
-server.use(function crossOrigin(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  return next();
-});
+app.use(configuredPassport.passport.initialize());
+app.use(configuredPassport.passport.session());
 
-/**
- * Authentication Routing
- */
-_authentication2.default.applyRoutes(server, '/v1/auth');
+// Load routers
+(0, _RouterLoader.loadRouters)(app);
 
-/**
- * Payments Routing
- */
-_payments2.default.applyRoutes(server, '/v1/pay');
-
-/**
- * Catalog Routing
- */
-_catalog2.default.applyRoutes(server, '/v1/catalog');
-
-/**
- * Accounts Routing
- */
-_accounts2.default.applyRoutes(server, '/v1/accounts');
-
-/**
- * Cart Routing
- */
-_cart2.default.applyRoutes(server, '/v1/cart');
-
-/**
- * Handles debugging.
- */
-server.use(function (req, res, next) {
-  console.log(req.method + ' ' + req.url);
-  return next();
-});
-
-/**
- * Handle the serving of static files that live within public.
- */
-server.get(/\/(.*)?.*/, _restify2.default.plugins.serveStatic({
-  directory: __dirname + '/public',
-  default: '/index.html'
-}));
-
-server.listen(port, function () {
+app.listen(port, function () {
   console.log('Http Server listening on ', port);
 });
 //# sourceMappingURL=server.js.map

@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha ./dist/test --exit",
+    "test-node": "babel-node ./node_modules/.bin/mocha ./test",
     "test-with-coverage": "nyc --reporter=text npm test",
     "dev": "nodemon dist/server.js",
     "start": "node dist/server.js"

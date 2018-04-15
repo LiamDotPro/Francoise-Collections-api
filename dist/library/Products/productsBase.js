@@ -207,7 +207,12 @@ var productsBase = function () {
 
                             case 6:
                                 resultInventory = _context3.sent;
-                                return _context3.abrupt('return', { msg: 'Success', payload: 0, insertedId: createdProduct.dataValues.id });
+                                return _context3.abrupt('return', {
+                                    msg: 'Success',
+                                    payload: 0,
+                                    insertedId: createdProduct.dataValues.id,
+                                    resultInventory: resultInventory.insertedId
+                                });
 
                             case 10:
                                 _context3.prev = 10;

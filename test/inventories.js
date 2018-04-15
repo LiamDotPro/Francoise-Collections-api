@@ -48,10 +48,6 @@ describe('Inventories', () => {
             return assert.equal(result.payload, 0, result.msg);
         });
 
-        it('Should get the inventory using a join from the product table', async () => {
-
-        });
-
         it('Should delete the newly created inventory', async () => {
             let result = await inventories.deleteInventoryById(createdId);
             return assert.isTrue(result, result.msg);

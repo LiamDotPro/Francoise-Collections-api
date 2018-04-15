@@ -104,7 +104,12 @@ export default class productsBase {
             // Create an inventory using the product identifier.
             let resultInventory = await inventories.createNewInventory(createdProduct.dataValues.id, 0, 0, 0, 0);
 
-            return {msg: 'Success', payload: 0, insertedId: createdProduct.dataValues.id};
+            return {
+                msg: 'Success',
+                payload: 0,
+                insertedId: createdProduct.dataValues.id,
+                resultInventory: resultInventory.insertedId
+            };
         } catch (e) {
             return {msg: 'An error occurred while trying to create a new product', payload: 1};
         }

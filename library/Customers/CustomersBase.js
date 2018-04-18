@@ -20,7 +20,6 @@ export default class CustomersBase {
 
         try {
             let result = await customers.create({
-                addressId: 0,
                 customerName: customerName,
                 customerPhone: customerPhone,
                 customerEmailAddress: customerEmailAddress,
@@ -69,7 +68,7 @@ export default class CustomersBase {
 
             let customerList = allCustomers.map((item, index, arr) => {
                 return {
-                    inventory: item.dataValues,
+                    customer: item.dataValues,
                     index: index
                 };
             });
@@ -82,7 +81,7 @@ export default class CustomersBase {
 
         } catch (e) {
             return {
-                msg: 'An error occurred while trying to get the customer list',
+                msg: 'An error occurred while trying to get the customer list.',
                 payload: 1
             }
         }
@@ -122,7 +121,7 @@ export default class CustomersBase {
      */
     async deleteCustomerById(id) {
         if (!id) {
-            return {msg: 'No id was specified.', payload: 1}
+            return {msg: 'No id was specified..', payload: 1}
         }
 
         try {

@@ -9,11 +9,6 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            addressId: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-                unique: true
-            },
             customerName: {
                 type: Sequelize.STRING,
                 allowNull: false

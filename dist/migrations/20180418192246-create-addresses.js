@@ -2,28 +2,47 @@
 
 module.exports = {
     up: function up(queryInterface, Sequelize) {
-        return queryInterface.createTable('customers', {
+        return queryInterface.createTable('addresses', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            customerName: {
+            customerId: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            line_1: {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            customerPhone: {
+            line_2: {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            customerEmailAddress: {
+            line_3: {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            otherDetails: {
+            city: {
                 type: Sequelize.STRING,
-                allowNull: true
+                allowNull: false
+            },
+            town: {
+                type: Sequelize.STRING
+            },
+            postCode: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            county: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            houseNumber: {
+                type: Sequelize.STRING,
+                allowNull: false
             },
             createdAt: {
                 allowNull: false,
@@ -35,9 +54,8 @@ module.exports = {
             }
         });
     },
-
     down: function down(queryInterface, Sequelize) {
-        return queryInterface.dropTable('customers');
+        return queryInterface.dropTable('addresses');
     }
 };
-//# sourceMappingURL=20180416173919-customers.js.map
+//# sourceMappingURL=20180418192246-create-addresses.js.map

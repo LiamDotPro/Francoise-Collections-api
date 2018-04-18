@@ -2,7 +2,6 @@
 
 module.exports = function (sequelize, DataTypes) {
     var customers = sequelize.define('customers', {
-        addressId: DataTypes.INTEGER,
         customerName: DataTypes.STRING,
         customerPhone: DataTypes.STRING,
         customerEmailAddress: DataTypes.STRING,

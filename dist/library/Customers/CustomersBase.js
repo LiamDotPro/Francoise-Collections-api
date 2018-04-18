@@ -242,11 +242,9 @@ var CustomersBase = function () {
                             case 7:
                                 _context4.prev = 7;
                                 _context4.t0 = _context4['catch'](0);
-
-                                console.log(_context4.t0);
                                 return _context4.abrupt('return', { msg: 'An error occurred while updating the inventory information.', payload: 1 });
 
-                            case 11:
+                            case 10:
                             case 'end':
                                 return _context4.stop();
                         }

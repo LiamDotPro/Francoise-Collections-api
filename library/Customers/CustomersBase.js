@@ -112,7 +112,6 @@ export default class CustomersBase {
             });
             return {msg: 'Success', payload: 0};
         } catch (e) {
-            console.log(e);
             return {msg: 'An error occurred while updating the inventory information.', payload: 1};
         }
     }

@@ -1,4 +1,6 @@
 # Stampless API Client
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/LiamDotPro/Francoise-Collections-api.svg?token=5142f50f668490f6a5db5a9b66a008dbc9150ed290dd27bec7f807f4671edc84&ts=1524323655302)](https://greenkeeper.io/)
 An express API which uses: Stripe, Reddis, Postgres, Sequlize, Passport, SocketIo, NYC, Mocha and Chai.
 
 [![Build Status](https://travis-ci.com/LiamDotPro/Francoise-Collections-api.svg?token=ctY9dT3jtHp4H7J27uxy&branch=master)](https://travis-ci.com/LiamDotPro/Francoise-Collections-api)

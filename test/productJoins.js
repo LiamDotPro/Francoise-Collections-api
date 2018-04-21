@@ -18,19 +18,34 @@ describe('Product Joins', () => {
         });
 
         it('Should get the newly created product joined with Inventories table.', async () => {
-            let result = await db.product.findAll({
-                where: {
-                    id: createdItemId
-                },
-                include: [{
-                    model: db.inventory,
+            try {
+                let result = await db.product.findAll({
                     where: {
-                        productIdentifer: createdItemId
-                    }
-                }]
-            });
+                        id: createdItemId
+                    },
+                    include: [{
+                        model: db.inventory,
+                        where: {
+                            productIdentifer: createdItemId
+                        }
+                    }]
+                });
 
-            return assert.equal(result[0].dataValues.inventory.productIdentifer, createdItemId, result.msg);
+                /**
+                 * , {
+                        model: db.productImages,
+                        where: {
+                            productId: createdItemId
+                        }
+                    
+                 */
+
+                console.log(result);
+
+                return assert.equal(result[0].dataValues.inventory.productIdentifer, createdItemId, result.msg);
+            } catch (e) {
+                console.log(e);
+            }
         });
 
         it('Should delete the previously made product', async () => {

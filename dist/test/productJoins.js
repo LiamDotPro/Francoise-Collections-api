@@ -52,7 +52,8 @@ describe('Product Joins', function () {
                 while (1) {
                     switch (_context2.prev = _context2.next) {
                         case 0:
-                            _context2.next = 2;
+                            _context2.prev = 0;
+                            _context2.next = 3;
                             return _index2.default.product.findAll({
                                 where: {
                                     id: createdItemId
@@ -65,16 +66,35 @@ describe('Product Joins', function () {
                                 }]
                             });
 
-                        case 2:
+                        case 3:
                             result = _context2.sent;
+
+
+                            /**
+                             * , {
+                                    model: db.productImages,
+                                    where: {
+                                        productId: createdItemId
+                                    }
+                                
+                             */
+
+                            console.log(result);
+
                             return _context2.abrupt('return', assert.equal(result[0].dataValues.inventory.productIdentifer, createdItemId, result.msg));
 
-                        case 4:
+                        case 8:
+                            _context2.prev = 8;
+                            _context2.t0 = _context2['catch'](0);
+
+                            console.log(_context2.t0);
+
+                        case 11:
                         case 'end':
                             return _context2.stop();
                     }
                 }
-            }, _callee2, undefined);
+            }, _callee2, undefined, [[0, 8]]);
         })));
 
         it('Should delete the previously made product', _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
